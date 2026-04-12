@@ -1,0 +1,40 @@
+from constantes import *
+
+def creer_perso(x,y):
+    """
+    La fonction crée le personnage avec une vitesse de départ toujours à (0,0)
+    x, y : position de départ
+    Renvoie un dictionnaire contenant sa postion et sa vitesse.
+
+    >>> creer_perso(500, 750)
+    {'position': (500, 750), 'vitesse': (0, 0)}
+    
+    >>> creer_perso(200, 300)
+    {'position': (200, 300), 'vitesse': (0, 0)}
+    """
+    return {"position" : (x,y), "vitesse" : (0,0)}
+
+def victoire(personnage, objectif):
+    """
+    La fonction renvoie True si le personnage a atteint l'objectif et False sinon.
+    personnage : dictionnaire (position, vitesse)
+    objectif : tuple de deux coins ((x1,y1), (x2, y2))
+
+    >>> objectif1 = ((250,100), (270, 170))
+    >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
+    >>> victoire(perso1, objectif1)
+    True
+
+    >>> perso2 = {"position": (230, 90), "vitesse": (0, 0)}
+    >>> victoire(perso2, objectif1)
+    False
+    """
+    perso_x1, perso_y1 = personnage["position"]
+    perso_x2 = perso_x1 + LARGEUR_PERSO
+    perso_y2 = perso_y1 + HAUTEUR_PERSO
+
+    (objectif_x1, objectif_y1), (objectif_x2, objectif_y2) = objectif
+
+    if perso_x2 > objectif_x1 and perso_x1 < objectif_x2 and perso_y2 > objectif_y1 and perso_y1 < objectif_y2 :
+        return True
+    return False

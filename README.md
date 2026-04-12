@@ -137,6 +137,7 @@ Donne au personnage une vitesse dirigée vers les coordonnées du clic. Si le cl
 **1.7 — Écrire les doctests**
 
 Écrire au moins 2 doctests par fonction (un cas normal, un cas limite).
+python -m doctest niveaux.py
 
 ---
 
