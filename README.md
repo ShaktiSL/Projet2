@@ -21,7 +21,7 @@ python3 sautemouton.py
 Le projet est réalisé en trinôme. Chaque membre a un domaine principal, mais tout le monde
 doit pouvoir expliquer l'ensemble du code à la soutenance.
 
-- **Dev A** — structures de données et interface graphique
+- **Dev A** : Shaktinath SOLEIL — structures de données et interface graphique
 - **Dev B** — chargement des niveaux et solveur
 - **Dev C** — moteur physique et tests
 
