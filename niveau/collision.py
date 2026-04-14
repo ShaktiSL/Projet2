@@ -1,4 +1,4 @@
-from constantes import *
+from constantes_niveau import *
 from creer_perso import *
 from victoire import *
 
