@@ -397,7 +397,7 @@ Pour lancer tous les doctests d'un fichier :
 
 ```bash
 python -m doctest physique.py
-python -m doctest niveau.py
+python -m doctest -v cheminfichier.py
 ```
 
 ---

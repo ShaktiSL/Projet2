@@ -25,3 +25,7 @@ def victoire(personnage, objectif):
     if perso_x2 > objectif_x1 and perso_x1 < objectif_x2 and perso_y2 > objectif_y1 and perso_y1 < objectif_y2 :
         return True
     return False
+
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()

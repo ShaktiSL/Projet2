@@ -21,9 +21,7 @@ def collision(personnage, lst_blocs):
         if perso_x2 > bloc_x1 and perso_x1 < bloc_x2 and perso_y2 > bloc_y1 and perso_y1 < bloc_y2 :
             return bloc
     return None
-perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-lst_bloc = [((105, 150), (300, 150))]
-print(collision(perso1, lst_bloc))
+
 
 if __name__ == "__main__":
     from doctest import testmod
