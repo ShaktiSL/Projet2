@@ -32,6 +32,3 @@ def charger_niveau(fichier):
     blocs = lire_blocs(lignes)
     
     return perso, blocs, objectif
-
-
-if __name__=="_"
