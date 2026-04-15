@@ -8,3 +8,7 @@ def creer_perso(x,y):
     {'position': (500, 750), 'vitesse': (0, 0)}
     """
     return {"position" : (x,y), "vitesse" : (0,0)}
+
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()

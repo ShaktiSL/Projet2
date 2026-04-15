@@ -8,9 +8,9 @@ def collision(personnage, lst_blocs):
     personnage : dictionnaire (position, vitesse)
     lst_blocs = liste de blocs ((x1,y1), (x2, y2))
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-    >>> bloc = [((200, 200), (300, 300)), ((105, 105), (150, 150))]
-    >>> collision(perso1, bloc)
-    ((105, 105), (150, 150))
+    >>> lst_bloc = [((105, 150), (300, 150))]
+    >>> collision(perso1, lst_bloc)
+    ((105, 150), (300, 150))
     """
     perso_x1, perso_y1 = personnage["position"]
     perso_x2 = perso_x1 + LARGEUR_PERSO
@@ -21,3 +21,10 @@ def collision(personnage, lst_blocs):
         if perso_x2 > bloc_x1 and perso_x1 < bloc_x2 and perso_y2 > bloc_y1 and perso_y1 < bloc_y2 :
             return bloc
     return None
+perso1 = {"position": (260, 140), "vitesse": (0, 0)}
+lst_bloc = [((105, 150), (300, 150))]
+print(collision(perso1, lst_bloc))
+
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()
