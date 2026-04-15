@@ -33,8 +33,6 @@ def clic_vers_vitesse(personnage, clic):
     
     personnage["vitesse"] = (vecteur_x, vecteur_y)
 
-
-perso1 = {"position": (100, 100), "vitesse": (0, 0)}
-clic1 = (130, 140)
-clic_vers_vitesse(perso1, clic1)
-print(perso1["vitesse"])
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()
