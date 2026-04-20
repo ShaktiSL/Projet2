@@ -1,0 +1,4 @@
+LISTE_NIVEAUX = ["niveau1.txt", "niveau2.txt", "niveau3.txt"]
+LARGEUR_FENETRE = 1500
+HAUTEUR_FENETRE = 700
+LARGEUR_BOUTON = 300

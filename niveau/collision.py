@@ -1,6 +1,6 @@
-from niveau.constantes_niveau import *
-from niveau.creer_perso import *
-from niveau.victoire import *
+from constantes_niveau import *
+from creer_perso import *
+from victoire import *
 
 def collision(personnage, lst_blocs):
     """

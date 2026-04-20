@@ -22,8 +22,8 @@ Le projet est réalisé en trinôme. Chaque membre a un domaine principal, mais 
 doit pouvoir expliquer l'ensemble du code à la soutenance.
 
 - **Dev A** : Shaktinath SOLEIL — structures de données et interface graphique
-- **Dev B** — chargement des niveaux et solveur
-- **Dev C** — moteur physique et tests
+- **Dev B** : Mohamed TAHAR — chargement des niveaux et solveur
+- **Dev C** : David NGALULA— moteur physique et tests
 
 ---
 

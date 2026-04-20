@@ -3,3 +3,4 @@ HAUTEUR_PERSO = 20
 VMAX = 50
 GRAVITE = (0, 1)
 PAS = 0.5
+
