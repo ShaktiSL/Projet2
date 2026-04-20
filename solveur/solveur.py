@@ -1,7 +1,7 @@
 from niveau.victoire import victoire
-from position_approx import position_approx
-from simuler_saut import simuler_saut
-from generer_vitesse import generer_vitesses
+from solveur.position_approx import position_approx
+from solveur.simuler_saut import simuler_saut
+from solveur.generer_vitesse import generer_vitesses
 
 def resoudre(personnage, blocs, objectif, vitesses, visite, prof_max):
     # 1. On vérifie si on a gagné
