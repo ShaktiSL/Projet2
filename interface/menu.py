@@ -39,6 +39,5 @@ def menu_selection(liste_niveaux):
     return selection
 
 if __name__ == "__main__":
-    choix = menu_selection(LISTE_NIVEAUX)
-    if choix:
-        print(f"Lancement de : {choix}")
+    from doctest import testmod
+    testmod()

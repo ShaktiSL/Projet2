@@ -23,7 +23,7 @@ doit pouvoir expliquer l'ensemble du code à la soutenance.
 
 - **Dev A** : Shaktinath SOLEIL — structures de données et interface graphique
 - **Dev B** : Mohamed TAHAR — chargement des niveaux et solveur
-- **Dev C** : David NGALULA— moteur physique et tests
+- **Dev C** : David NGALULA — moteur physique et tests
 
 ---
 
