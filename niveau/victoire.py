@@ -1,5 +1,5 @@
-from constantes_niveau import *
-from creer_perso import *
+from niveau.constantes_niveau import *
+from niveau.creer_perso import *
 
 def victoire(personnage, objectif):
     """

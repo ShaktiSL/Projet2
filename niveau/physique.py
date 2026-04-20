@@ -1,5 +1,5 @@
-from constantes_niveau import *
-from collision import collision
+from niveau.constantes_niveau import *
+from niveau.collision import collision
 
 
 
