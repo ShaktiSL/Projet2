@@ -4,10 +4,10 @@ HAUTEUR_FENETRE = 700
 LARGEUR_BOUTON = 300
 LARGEUR_PERSO = 20
 HAUTEUR_PERSO = 20
-VMAX = 50
 
 LARGEUR_PERSO = 20
 HAUTEUR_PERSO = 20
-GRAVITE = (0, 1)
-PAS = 0.5
+GRAVITE = (0, 1)  # Doit être un tuple de EXACTEMENT deux nombres
+PAS = 1.2          # Doit être un seul nombre
+VMAX = 30     # Puissance du saut
 

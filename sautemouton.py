@@ -33,12 +33,20 @@ def boucle_jeu(personnage, lst_blocs, objectif):
             if tev == 'Quitte':
                 return "QUITTER_TOTAL"
             elif tev == 'ClicGauche':
-                viseur = True
                 dernier_clic = (abscisse(ev), ordonnee(ev))
+                # 2. On calcule la vitesse (ton calcul VMAX est bon)
                 clic_vers_vitesse(personnage, dernier_clic)
+                # 3. ON ACTIVE LE VISEUR
+                viseur = True 
+                print("Visée activée à :", dernier_clic)
             elif tev == 'ClicDroit':
+                print("Clic droit reçu. État viseur :", viseur)
                 if viseur:
+                    # 4. On lance la simulation animée
                     simuler_saut(personnage, lst_blocs, objectif)
+                    # 5. On désactive le viseur SEULEMENT après le saut
                     viseur = False
+                else:
+                    print("Action refusée : Vous devez d'abord viser avec le Clic Gauche !")
             elif tev == 'Touche' and touche(ev) == 'Escape':
                 return "MENU"

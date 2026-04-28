@@ -142,27 +142,18 @@ def choc(personnage, lst_blocs):
 
 
 def pas(personnage, lst_blocs):
-    """
-    Effectue une étape de simulation. 
-    Retourne True si le personnage est à l'arrêt, False sinon.
-    """
-    # 1. On sauvegarde la position de départ de ce tour
-    pos_initiale = personnage["position"]
+    # 1. On mémorise la position exacte avant le mouvement
+    ancienne_pos = personnage["position"]
     
-    # 2. On applique le mouvement et la gravité
     deplacer(personnage, GRAVITE, PAS)
-    
-    # 3. On résout les collisions (remet la vitesse à 0 si contact)
     choc(personnage, lst_blocs)
 
-    # 4. On récupère la position et la vitesse finales du tour
-    pos_finale = personnage["position"]
+    # 2. On récupère la vitesse après le choc
     vx, vy = personnage["vitesse"]
 
-    # CONDITION D'ARRÊT :
-    # On s'arrête si la position n'a plus changé DU TOUT 
-    # ou si la vitesse est tombée à zéro.
-    if pos_finale == pos_initiale and vx == 0 and vy == 0:
+    # CONDITION D'ARRÊT (Le secret pour ne plus freezer) :
+    # Si la vitesse est (0,0) OU si la position n'a pas changé (bloqué contre un mur/sol)
+    if (vx == 0 and vy == 0) or (personnage["position"] == ancienne_pos):
         return True 
-        
+    
     return False
