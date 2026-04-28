@@ -1,5 +1,5 @@
 from constantes import *
-from creer_perso import *
+from niveau.creer_perso import *
 from interface.fltk import *
 
 def victoire(personnage, objectif):
@@ -29,31 +29,21 @@ def victoire(personnage, objectif):
 
 def afficher_victoire():
     """
-    Affiche le message de victoire et bloque l'écran jusqu'à une action (Interface).
+    Affiche le message de victoire.
     """
-    # 1. On dessine le message par-dessus le niveau actuel
     milieu_x = LARGEUR_FENETRE // 2
     milieu_y = HAUTEUR_FENETRE // 2
-    
-    # Un petit rectangle de fond pour faire ressortir le texte
-    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50,
-              couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
-    
-    texte(milieu_x, milieu_y, "VICTOIRE !", 
-          ancrage='center', taille=40, couleur='green', tag='ecran_fin')
-    
-    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", 
-          ancrage='center', taille=12, couleur='black', tag='ecran_fin')
+    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50, couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
+    texte(milieu_x, milieu_y, "VICTOIRE !", ancrage='center', taille=40, couleur='green', tag='ecran_fin')
+    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", ancrage='center', taille=12, couleur='black', tag='ecran_fin')
     
     mise_a_jour()
 
-    # 2. Boucle d'attente (le blocage)
     attente_clic = True
     while attente_clic:
         ev = donne_ev()
         tev = type_ev(ev)
         
-        # Si on clique, on appuie sur une touche ou on ferme la fenêtre
         if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
             attente_clic = False
 

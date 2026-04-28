@@ -1,0 +1,4 @@
+100,500 # Position du perso (x,y)
+1200,100,1300,200 # Objectif (x1,y1,x2,y2)
+0,600,1500,700 # Sol (bloc 1)
+400,400,600,450 # Plateforme (bloc 2)

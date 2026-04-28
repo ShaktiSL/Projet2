@@ -1,6 +1,6 @@
-from constantes_niveau import *
-from victoire import *
-from creer_perso import *
+from constantes import *
+from niveau.victoire import *
+from niveau.creer_perso import *
 import math
 
 def clic_vers_vitesse(personnage, clic):
@@ -26,6 +26,10 @@ def clic_vers_vitesse(personnage, clic):
     vecteur_y = float(clic_y - perso_y)
     norme = math.sqrt(vecteur_x**2 + vecteur_y**2)
 
+    if norme == 0:
+        personnage["vitesse"] = (0.0, 0.0)
+        return
+    
     if norme > VMAX : 
         coef = VMAX / norme
         vecteur_x = vecteur_x * coef

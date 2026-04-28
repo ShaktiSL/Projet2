@@ -1,5 +1,5 @@
-from niveau.constantes_niveau import *
-from niveau.collision import collision
+from constantes import *
+from niveau.collision import *
 
 
 
@@ -143,38 +143,26 @@ def choc(personnage, lst_blocs):
 
 def pas(personnage, lst_blocs):
     """
-    Effectue une étape complète de simulation :
-    déplace le personnage, puis résout les collisions éventuelles.
-    Retourne True si le personnage est au repos après cette étape, False sinon.
-
-    personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
-    lst_blocs  : liste de blocs ((x1, y1), (x2, y2))
-
+    Effectue une étape de simulation. 
+    Retourne True si le personnage est à l'arrêt, False sinon.
     """
-    # À compléter
-    x, y = personnage["position"]
-    vx, vy = personnage["vitesse"]
-
+    # 1. On sauvegarde la position de départ de ce tour
+    pos_initiale = personnage["position"]
+    
+    # 2. On applique le mouvement et la gravité
     deplacer(personnage, GRAVITE, PAS)
+    
+    # 3. On résout les collisions (remet la vitesse à 0 si contact)
     choc(personnage, lst_blocs)
 
-    if (x, y) == personnage["position"] and personnage["vitesse"] == (0,0) :
+    # 4. On récupère la position et la vitesse finales du tour
+    pos_finale = personnage["position"]
+    vx, vy = personnage["vitesse"]
+
+    # CONDITION D'ARRÊT :
+    # On s'arrête si la position n'a plus changé DU TOUT 
+    # ou si la vitesse est tombée à zéro.
+    if pos_finale == pos_initiale and vx == 0 and vy == 0:
         return True 
+        
     return False
-
-
-
-
-def simuler(personnage, lst_blocs):
-    trajectoire = [personnage["position"]]  # position de départ
-    
-    while not pas(personnage, lst_blocs):
-        trajectoire.append(personnage["position"])
-    
-    trajectoire.append(personnage["position"])  # position finale
-    return trajectoire
-
-
-#if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()

@@ -1,4 +1,4 @@
-from niveau.constantes_niveau import VMAX
+from constantes import *
 
 def generer_vitesses(pas_v):
     """Génère tous les sauts possibles."""

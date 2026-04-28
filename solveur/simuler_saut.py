@@ -1,20 +1,24 @@
-from niveau.physique import pas
+from niveau.physique import *
+from interface.affichage import *
 
-def simuler_saut(personnage, vitesse_saut, blocs):
-    """Simule un saut complet jusqu'à l'arrêt du personnage."""
-    copie_p = {"position": personnage["position"], "vitesse": vitesse_saut}
-    
+
+def simuler_saut(personnage, blocs, objectif):
     en_mouvement = True
-    compteur_securite = 0  # On prépare notre chronomètre d'urgence
-    
+    compteur = 0
     while en_mouvement:
-        if pas(copie_p, blocs): 
+        if pas(personnage, blocs): 
             en_mouvement = False
-            
-        compteur_securite += 1
         
-        # Si la boucle tourne plus de 1000 fois ou si le perso tombe sous y=2000
-        if compteur_securite > 1000 or copie_p["position"][1] > 2000:
-            en_mouvement = False
+        efface_tout()
+        dessiner_blocs(blocs)
+        dessiner_objectif(objectif)
+        dessiner_personnage(personnage)
+        mise_a_jour()
+        
+        # COMMANDE CRITIQUE pour éviter le freeze :
+        donne_ev() 
+        attente(10) 
             
-    return copie_p
+        compteur += 1
+        if compteur > 800 or personnage["position"][1] > 1000:
+            en_mouvement = False
