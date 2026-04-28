@@ -1,5 +1,6 @@
-from constantes_niveau import *
+from constantes import *
 from creer_perso import *
+from interface.fltk import *
 
 def victoire(personnage, objectif):
     """
@@ -25,6 +26,36 @@ def victoire(personnage, objectif):
     if perso_x2 > objectif_x1 and perso_x1 < objectif_x2 and perso_y2 > objectif_y1 and perso_y1 < objectif_y2 :
         return True
     return False
+
+def afficher_victoire():
+    """
+    Affiche le message de victoire et bloque l'écran jusqu'à une action (Interface).
+    """
+    # 1. On dessine le message par-dessus le niveau actuel
+    milieu_x = LARGEUR_FENETRE // 2
+    milieu_y = HAUTEUR_FENETRE // 2
+    
+    # Un petit rectangle de fond pour faire ressortir le texte
+    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50,
+              couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
+    
+    texte(milieu_x, milieu_y, "VICTOIRE !", 
+          ancrage='center', taille=40, couleur='green', tag='ecran_fin')
+    
+    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", 
+          ancrage='center', taille=12, couleur='black', tag='ecran_fin')
+    
+    mise_a_jour()
+
+    # 2. Boucle d'attente (le blocage)
+    attente_clic = True
+    while attente_clic:
+        ev = donne_ev()
+        tev = type_ev(ev)
+        
+        # Si on clique, on appuie sur une touche ou on ferme la fenêtre
+        if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
+            attente_clic = False
 
 if __name__ == "__main__":
     from doctest import testmod

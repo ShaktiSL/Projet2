@@ -1,11 +1,12 @@
 from interface.fltk import *
-from interface.constantes_interphace import *
+from constantes import *
 from interface.affichage import *
-from interface.menu import menu_selection
-from physique import simuler
-from collision import collision
-from victoire import victoire
-from clic_vers_vitesse import clic_vers_vitesse
+from interface.menu import *
+from interface.fleche import *
+from niveau.physique import *
+from niveau.collision import *
+from niveau.victoire import *
+from niveau.clic_vers_vitesse import *
 
 def boucle_jeu(personnage, lst_blocs, objectif):
     cree_fenetre(LARGEUR_FENETRE, HAUTEUR_FENETRE)

@@ -1,5 +1,5 @@
-from fltk import *
-from constantes_interphace import *
+from interface.fltk import *
+from constantes import *
 
 def dessiner_objectif(objectif):
     """
@@ -45,17 +45,6 @@ def dessiner_personnage(personnage):
     
     rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
     cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
-
-def dessiner_fleche(personnage, clic):
-    # départ : centre du personnage
-    x1 = personnage["position"][0] + LARGEUR_PERSO // 2
-    y1 = personnage["position"][1] + HAUTEUR_PERSO // 2
-    
-    # arrivée : position du curseur
-    x2, y2 = clic
-    
-    efface('fleche')  # efface la flèche précédente
-    ligne(x1, y1, x2, y2, couleur='red', tag='fleche')
 
     
 if __name__ == "__main__":

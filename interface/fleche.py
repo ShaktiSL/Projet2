@@ -1,11 +1,12 @@
-from fltk import *
-from constantes_interphace import *
+from interface.fltk import *
+from constantes import *
 import math
 def dessiner_fleche(personnage, clic):
     """
     Dessine une flèche rouge indiquant la direction et l'intensité du saut.
     personnage : dictionnaire avec la clé 'position'
     """
+    efface('prevision')
     perso_x, perso_y = personnage["position"]
     start_x = perso_x + LARGEUR_PERSO / 2
     start_y = perso_y + HAUTEUR_PERSO / 2

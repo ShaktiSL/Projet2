@@ -1,5 +1,5 @@
-from fltk import *
-from constantes_interphace import *
+from interface.fltk import *
+from constantes import *
 
 def menu_selection(liste_niveaux):
     """
@@ -31,7 +31,7 @@ def menu_selection(liste_niveaux):
                 if x_min <= x <= x_max and y_min <= y <= y_max:
                     selection = nom
 
-        elif tev == 'Quitte':
+        elif tev == 'Quitte': 
             ferme_fenetre()
             return None
 
@@ -40,4 +40,4 @@ def menu_selection(liste_niveaux):
 
 if __name__ == "__main__":
     from doctest import testmod
-    testmod()
+    testmod() 

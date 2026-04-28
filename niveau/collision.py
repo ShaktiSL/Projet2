@@ -1,6 +1,6 @@
-from constantes_niveau import *
-from creer_perso import *
-from victoire import *
+from constantes import *
+from niveau.creer_perso import *
+from niveau.victoire import *
 
 def collision(personnage, lst_blocs):
     """
@@ -8,9 +8,9 @@ def collision(personnage, lst_blocs):
     personnage : dictionnaire (position, vitesse)
     lst_blocs = liste de blocs ((x1,y1), (x2, y2))
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-    >>> lst_bloc = [((105, 150), (300, 150))]
+    >>> lst_bloc = [((105, 150), (300, 170))]
     >>> collision(perso1, lst_bloc)
-    ((105, 150), (300, 150))
+    ((105, 150), (300, 170))
     """
     perso_x1, perso_y1 = personnage["position"]
     perso_x2 = perso_x1 + LARGEUR_PERSO
