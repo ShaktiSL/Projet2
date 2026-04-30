@@ -3,7 +3,7 @@ from solveur.position_approx import *
 from solveur.simuler_saut import *
 from solveur.generer_vitesse import *
 
-def resoudre(personnage, blocs, objectif, vitesses, visite, prof_max):
+def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max):
     # 1. On vérifie si on a gagné
     if victoire(personnage, objectif):
         return []
@@ -13,19 +13,19 @@ def resoudre(personnage, blocs, objectif, vitesses, visite, prof_max):
         return None
     
     # 3. On vérifie si on est déjà passé par là
-    pos = position_approx(personnage, 10)
-    if pos in visite:
+    position_grille = position_approx(personnage, 10)
+    if position_grille in deja_explore:
         return None
-    visite.add(pos)
+    deja_explore.add(position_grille)
     
     # 4. On teste les sauts
-    for v in vitesses:
-        nouv_perso = simuler_saut(personnage, v, blocs)
+    for vitesse in liste_vitesses:
+        nouv_perso = simuler_saut(personnage, vitesse, blocs)
         
-        chemin = resoudre(nouv_perso, blocs, objectif, vitesses, visite, prof_max - 1)
+        chemin = resoudre(nouv_perso, blocs, objectif, liste_vitesses, deja_explore, prof_max - 1)
         
         if chemin is not None:
-            return [v] + chemin
+            return [vitesse] + chemin
             
     return None
 

@@ -5,8 +5,8 @@ def lire_perso(lignes):
 
 def lire_objectif(lignes):
     ligne = lignes[1].split('#')[0].strip()
-    p = ligne.split(',')
-    return ((int(p[0]), int(p[1])), (int(p[2]), int(p[3])))
+    coords = ligne.split(',')
+    return ((int(coords[0]), int(coords[1])), (int(coords[2]), int(coords[3])))
 
 def lire_blocs(lignes):
     """
@@ -15,8 +15,8 @@ def lire_blocs(lignes):
     lst_blocs = []
     for ligne in lignes[2:]:
         propre = ligne.split('#')[0].strip()
-        p = propre.split(',')
-        bloc = ((int(p[0]), int(p[1])), (int(p[2]), int(p[3])))
+        points = propre.split(',')
+        bloc = ((int(points[0]), int(points[1])), (int(points[2]), int(points[3])))
         lst_blocs.append(bloc)
     return lst_blocs
 
