@@ -1,7 +1,5 @@
 from constantes import *
-from niveau.collision import *
-
-
+from niveau.collision import collision
 
 
 def deplacer(personnage, gravite, pas):
@@ -157,3 +155,27 @@ def pas(personnage, lst_blocs):
         return True 
     
     return False
+
+def simuler(personnage, lst_blocs):
+    """
+    Répète les pas jusqu'à l'arrêt du personnage.
+    Retourne la liste de toutes les positions intermédiaires.
+ 
+    >>> p = {"position": (100, 100), "vitesse": (0, 0)}
+    >>> traj = simuler(p, [])
+    >>> traj[0]
+    (100, 100)
+    """
+    trajectoire = [personnage["position"]]
+ 
+    compteur = 0
+    while not pas(personnage, lst_blocs):
+        trajectoire.append(personnage["position"])
+        compteur += 1
+        # sécurité : éviter une boucle infinie
+        if compteur > 5000:
+            personnage["vitesse"] = (0, 0)
+            break
+ 
+    trajectoire.append(personnage["position"])
+    return trajectoire

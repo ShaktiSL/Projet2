@@ -1,3 +1,7 @@
+# -------------------------------------------------------------
+# Chargement d'un niveau depuis un fichier .txt
+# -------------------------------------------------------------
+
 def lire_perso(lignes):
     ligne = lignes[0].split('#')[0].strip()
     parts = ligne.split(',')
