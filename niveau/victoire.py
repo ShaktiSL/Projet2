@@ -27,26 +27,6 @@ def victoire(personnage, objectif):
         return True
     return False
 
-def afficher_victoire():
-    """
-    Affiche le message de victoire.
-    """
-    milieu_x = LARGEUR_FENETRE // 2
-    milieu_y = HAUTEUR_FENETRE // 2
-    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50, couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
-    texte(milieu_x, milieu_y, "VICTOIRE !", ancrage='center', taille=40, couleur='green', tag='ecran_fin')
-    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", ancrage='center', taille=12, couleur='black', tag='ecran_fin')
-    
-    mise_a_jour()
-
-    attente_clic = True
-    while attente_clic:
-        ev = donne_ev()
-        tev = type_ev(ev)
-        
-        if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
-            attente_clic = False
-
 if __name__ == "__main__":
     from doctest import testmod
     testmod()

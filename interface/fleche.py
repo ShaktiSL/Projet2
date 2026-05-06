@@ -38,21 +38,20 @@ def dessiner_trajectoire(trajectoire):
 
 def afficher_victoire():
     """
-    Affiche le message de victoire et attend un clic pour continuer.
+    Affiche le message de victoire.
     """
-    mx = LARGEUR_FENETRE // 2
-    my = HAUTEUR_FENETRE // 2
-    rectangle(mx - 200, my - 60, mx + 200, my + 60,
-              couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
-    texte(mx, my - 10, "VICTOIRE !",
-          ancrage='center', taille=40, couleur='green', tag='ecran_fin')
-    texte(mx, my + 35, "Cliquez pour continuer",
-          ancrage='center', taille=14, couleur='black', tag='ecran_fin')
+    milieu_x = LARGEUR_FENETRE // 2
+    milieu_y = HAUTEUR_FENETRE // 2
+    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50, couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
+    texte(milieu_x, milieu_y, "VICTOIRE !", ancrage='center', taille=40, couleur='green', tag='ecran_fin')
+    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", ancrage='center', taille=12, couleur='black', tag='ecran_fin')
+    
     mise_a_jour()
- 
-    # Attendre un clic ou une touche
-    while True:
-        ev  = donne_ev()
+
+    attente_clic = True
+    while attente_clic:
+        ev = donne_ev()
         tev = type_ev(ev)
+        
         if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
-            break
+            attente_clic = False
