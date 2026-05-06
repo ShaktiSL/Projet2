@@ -1,5 +1,6 @@
 from constantes import *
 from niveau.collision import collision
+import math
 
 
 def deplacer(personnage, gravite, pas):
@@ -179,3 +180,65 @@ def simuler(personnage, lst_blocs):
  
     trajectoire.append(personnage["position"])
     return trajectoire
+
+
+
+def clic_vers_vitesse(personnage, clic):
+    """
+    La fonction met à jour la vitesse du personnage par le clic de l'utilisateur.
+    personnage : dictionnaire (position, vitesse)
+    clic : tuple (x, y) des coordonnées du clics.
+    >>> perso1 = {"position": (100, 100), "vitesse": (0, 0)}
+    >>> clic1 = (130, 140)
+    >>> clic_vers_vitesse(perso1, clic1)
+    >>> perso1["vitesse"]
+    (30.0, 40.0)
+    >>> perso2 = {"position": (0, 0), "vitesse": (0, 0)}
+    >>> clic2 = (300, 400)
+    >>> clic_vers_vitesse(perso2, clic2)
+    >>> perso2["vitesse"]
+    (30.0, 40.0)
+    """
+
+    perso_x, perso_y = personnage["position"]
+    clic_x, clic_y = clic
+    vecteur_x = float(clic_x - perso_x)
+    vecteur_y = float(clic_y - perso_y)
+    norme = math.sqrt(vecteur_x**2 + vecteur_y**2)
+
+    if norme == 0:
+        personnage["vitesse"] = (0.0, 0.0)
+        return
+    
+    if norme > VMAX : 
+        coef = VMAX / norme
+        vecteur_x = vecteur_x * coef
+        vecteur_y = vecteur_y * coef
+    
+    personnage["vitesse"] = (vecteur_x, vecteur_y)
+
+
+
+def collision(personnage, lst_blocs):
+    """
+    La fonction renvoie le bloc ayant eu un contact avec le personnage et None sinon.
+    personnage : dictionnaire (position, vitesse)
+    lst_blocs = liste de blocs ((x1,y1), (x2, y2))
+    >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
+    >>> lst_bloc = [((105, 150), (300, 170))]
+    >>> collision(perso1, lst_bloc)
+    ((105, 150), (300, 170))
+    """
+    perso_x1, perso_y1 = personnage["position"]
+    perso_x2 = perso_x1 + LARGEUR_PERSO
+    perso_y2 = perso_y1 + HAUTEUR_PERSO
+
+    for bloc in lst_blocs : 
+        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2) = bloc
+        if perso_x2 > bloc_x1 and perso_x1 < bloc_x2 and perso_y2 > bloc_y1 and perso_y1 < bloc_y2 :
+            return bloc
+    return None
+
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()
