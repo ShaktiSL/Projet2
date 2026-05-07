@@ -26,8 +26,8 @@ def dessiner_blocs(lst_blocs):
     (20, 20)
     """
     for bloc in lst_blocs:
-        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2) = bloc
-        rectangle(bloc_x1, bloc_y1, bloc_x2, bloc_y2, couleur='black', remplissage='gray', tag='bloc')
+        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), couleur_bloc = bloc
+        rectangle(bloc_x1, bloc_y1, bloc_x2, bloc_y2, couleur = 'black', remplissage = couleur_bloc, tag='bloc')
 
 def dessiner_personnage(personnage):
     """
@@ -102,6 +102,7 @@ def afficher_victoire():
         if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
             attente_clic = False
 
+
 def menu_selection(liste_niveaux):
     """
     Affiche les niveaux centrés et renvoie le chemin du fichier choisi.
@@ -133,7 +134,7 @@ def menu_selection(liste_niveaux):
                         selection = nom
 
             elif tev == 'Quitte': 
-                return "QUIITER_TOTAL"
+                return "QUITTER"
 
     return selection
 

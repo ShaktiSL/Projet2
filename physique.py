@@ -40,7 +40,7 @@ def placer_bord(personnage, bloc, cote):
     (50, 80)
     """
     x, y = personnage["position"]
-    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2) = bloc
+    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _= bloc
 
     if cote == "haut":
         y = bloc_y1 - HAUTEUR_PERSO
@@ -54,7 +54,7 @@ def placer_bord(personnage, bloc, cote):
     personnage["position"] = (x, y)
 
 p = {"position": (50, 98), "vitesse": (0, 5)}
-placer_bord(p, ((0, 100), (200, 200)), "haut")
+placer_bord(p, ((0, 100), (200, 200), "gray"), "haut")
 print(p["position"])
 
 
@@ -77,7 +77,7 @@ def detecter_cote(personnage, bloc, vitesse):
     """
     x, y = personnage["position"]
     vx, vy = vitesse
-    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2) = bloc
+    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _ = bloc
 
     if vy != 0 and vx == 0:
         if vy > 0:
@@ -139,44 +139,41 @@ def choc(personnage, lst_blocs):
 
 
 
-def pas(personnage, lst_blocs):
-    # 1. On mémorise la position exacte avant le mouvement
+def pas(personnage, lst_blocs, objectif):
+    # 1. On mémorise la position avant le mouvement
     ancienne_pos = personnage["position"]
     
+    # 2. On déplace le personnage
     deplacer(personnage, GRAVITE, PAS)
+
+    # --- LE CHANGEMENT EST ICI ---
+    # Si on touche l'objectif maintenant, on ne gère PAS le choc
+    # On laisse le personnage "entrer" dans le rectangle rouge
+    if victoire(personnage, objectif):
+        return True # On arrête le mouvement car on a gagné !
+
+    # 3. Sinon, on gère les collisions normales avec les blocs gris
     choc(personnage, lst_blocs)
 
-    # 2. On récupère la vitesse après le choc
+    # 4. On vérifie si on est à l'arrêt
     vx, vy = personnage["vitesse"]
-
-    # CONDITION D'ARRÊT (Le secret pour ne plus freezer) :
-    # Si la vitesse est (0,0) OU si la position n'a pas changé (bloqué contre un mur/sol)
     if (vx == 0 and vy == 0) or (personnage["position"] == ancienne_pos):
         return True 
     
     return False
 
-def simuler(personnage, lst_blocs):
-    """
-    Répète les pas jusqu'à l'arrêt du personnage.
-    Retourne la liste de toutes les positions intermédiaires.
- 
-    >>> p = {"position": (100, 100), "vitesse": (0, 0)}
-    >>> traj = simuler(p, [])
-    >>> traj[0]
-    (100, 100)
-    """
+def simuler(personnage, lst_blocs, objectif): # Ajoute objectif ici
     trajectoire = [personnage["position"]]
- 
     compteur = 0
-    while not pas(personnage, lst_blocs):
+    
+    # Envoie l'objectif à la fonction pas
+    while not pas(personnage, lst_blocs, objectif): 
         trajectoire.append(personnage["position"])
         compteur += 1
-        # sécurité : éviter une boucle infinie
         if compteur > 5000:
             personnage["vitesse"] = (0, 0)
             break
- 
+
     trajectoire.append(personnage["position"])
     return trajectoire
 
@@ -233,7 +230,7 @@ def collision(personnage, lst_blocs):
     perso_y2 = perso_y1 + HAUTEUR_PERSO
 
     for bloc in lst_blocs : 
-        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2) = bloc
+        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _ = bloc
         if perso_x2 > bloc_x1 and perso_x1 < bloc_x2 and perso_y2 > bloc_y1 and perso_y1 < bloc_y2 :
             return bloc
     return None

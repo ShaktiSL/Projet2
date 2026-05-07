@@ -29,6 +29,16 @@ def boucle_jeu(personnage, lst_blocs, objectif):
  
         # --- Compteur de sauts ---
         texte(10, 10, f"Sauts : {nb_sauts}", ancrage='nw', taille=18, couleur='black')
+
+        x, y = personnage["position"]
+        if x < 0 or x > LARGEUR_FENETRE or y > HAUTEUR_FENETRE or y < -200:
+            print("Oups, le mouton s'est égaré !")
+            if len(historique) > 0:
+                # On reprend le dernier état de l'historique
+                etat = historique[-1]
+                personnage["position"] = etat["position"]
+                personnage["vitesse"] = (0, 0)
+                viseur = False
  
         mise_a_jour()
  
@@ -51,10 +61,12 @@ def boucle_jeu(personnage, lst_blocs, objectif):
             clic_vers_vitesse(personnage, dernier_clic)
             viseur = True
  
+        # Dans main.py, ligne 57 environ :
         elif tev == 'ClicDroit':
             if viseur:
-                historique.append(dict(personnage))  # on sauvegarde avant le saut
-                trajectoire = simuler(personnage, lst_blocs)
+                historique.append(dict(personnage))
+                # N'oublie pas d'ajouter 'objectif' (ou 'obj') ici !
+                trajectoire = simuler(personnage, lst_blocs, objectif) 
                 dessiner_trajectoire(trajectoire)
                 nb_sauts += 1
                 viseur = False
@@ -78,18 +90,28 @@ if __name__ == "__main__":
     cree_fenetre(LARGEUR_FENETRE, HAUTEUR_FENETRE)
  
     continuer = True
+    # On commence par demander le niveau
+    fichier = menu_selection(LISTE_NIVEAUX)
+
     while continuer:
-        fichier = menu_selection(LISTE_NIVEAUX)
- 
-        if fichier == "QUITTER":
+        # Si l'utilisateur a fermé la fenêtre ou cliqué sur Quitter
+        if fichier == "QUITTER" or fichier is None:
             break
- 
+        
+        # On construit le chemin et on charge
         chemin = "niveau/" + fichier
         perso, blocs, obj = charger_niveau(chemin)
  
+        # On lance la partie
         resultat = boucle_jeu(perso, blocs, obj)
  
         if resultat == "QUITTER":
             continuer = False
- 
+        elif resultat == "MENU":
+            # Si on revient au menu, on REDEMANDE quel niveau choisir
+            fichier = menu_selection(LISTE_NIVEAUX)
+        else:
+            # Sécurité
+            continuer = False
+
     ferme_fenetre()

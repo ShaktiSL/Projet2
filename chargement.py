@@ -31,9 +31,19 @@ def lire_blocs(lignes):
     lst_blocs = []
     for ligne in lignes[2:]:
         propre = ligne.split('#')[0].strip()
+        if propre == "": 
+            continue
         points = propre.split(',')
-        bloc = ((int(points[0]), int(points[1])), (int(points[2]), int(points[3])))
-        lst_blocs.append(bloc)
+        coords = ((int(points[0]), int(points[1])), (int(points[2]), int(points[3])))
+        
+        # On vérifie s'il y a une 5ème valeur pour la couleur
+        if len(points) == 5:
+            couleur = points[4].strip()
+        else:
+            couleur = 'gray' # Couleur par défaut si rien n'est précisé
+            
+        # On stocke tout dans un tuple : ( (x1,y1), (x2,y2), "couleur" )
+        lst_blocs.append((coords[0], coords[1], couleur))
     return lst_blocs
 
 def charger_niveau(fichier):
