@@ -32,7 +32,7 @@ def position_approx(personnage, taille_grille):
     return (int(x // taille_grille), int(y // taille_grille))
 
 
-def simuler_saut(personnage, blocs, objectif):
+def simuler_saut(personnage, blocs, objectif, est_graphique):
     """
     Simule un saut complet depuis la position actuelle du personnage
     jusqu'à ce qu'il soit au repos. Travaille sur une copie du personnage
@@ -46,7 +46,7 @@ def simuler_saut(personnage, blocs, objectif):
 
     while en_mouvement:
         # Bug corrigé : objectif passé en argument
-        if pas(perso_copie, blocs, objectif):
+        if pas(perso_copie, blocs, objectif, est_graphique):
             en_mouvement = False
 
         compteur += 1
@@ -61,7 +61,7 @@ def simuler_saut(personnage, blocs, objectif):
     return perso_copie  # Bug corrigé : on retourne la copie
 
 
-def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max):
+def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max, est_graphique):
     # 1. On vérifie si on a gagné
     if victoire(personnage, objectif):
         return []
@@ -77,14 +77,15 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
     deja_explore.add(position_grille)
 
     # 4. On teste les sauts
+    print(f"DEBUG: type de liste_vitesses = {type(liste_vitesses)}")
     for vitesse in liste_vitesses:
         # Bug corrigé : on crée une copie avec la nouvelle vitesse
         perso_essai = {"position": personnage["position"], "vitesse": vitesse}
 
         # Bug corrigé : bons arguments dans le bon ordre
-        nouv_perso = simuler_saut(perso_essai, blocs, objectif)
+        nouv_perso = simuler_saut(perso_essai, blocs, objectif, est_graphique)
 
-        chemin = resoudre(nouv_perso, blocs, objectif, liste_vitesses, deja_explore, prof_max - 1)
+        chemin = resoudre(nouv_perso, blocs, objectif, liste_vitesses, deja_explore, prof_max - 1, est_graphique)
 
         if chemin is not None:
             return [vitesse] + chemin
@@ -92,7 +93,7 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
     return None
 
 
-def resoudre_niveau(personnage, blocs, objectif, pas_v=10, prof_max=5):
+def resoudre_niveau(personnage, blocs, objectif, est_graphique, pas_v=10, prof_max=5):
     """La fonction finale à appeler.
     
     personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
@@ -102,7 +103,7 @@ def resoudre_niveau(personnage, blocs, objectif, pas_v=10, prof_max=5):
     prof_max   : nombre de sauts maximum autorisés
     """
     vitesses = generer_vitesses(pas_v)
-    return resoudre(personnage, blocs, objectif, vitesses, set(), prof_max)
+    return resoudre(personnage, blocs, objectif, vitesses, set(), prof_max, est_graphique)
 
 
 if __name__ == "__main__":

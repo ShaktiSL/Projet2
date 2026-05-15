@@ -52,9 +52,17 @@ def charger_niveau(fichier):
     """
     with open(fichier, 'r', encoding='utf-8') as f:
         lignes = f.readlines()
+    premiere_ligne = lignes[0].strip()
+    est_graphique = False
+    if premiere_ligne == "STYLE:1":
+        est_graphique = True
+        lignes_utiles = lignes[1:]
+    elif premiere_ligne == "STYLE:0":
+        est_graphique = False
+        lignes_utiles = lignes[1:]
+
+    perso = lire_perso(lignes_utiles)
+    objectif = lire_objectif(lignes_utiles)
+    blocs = lire_blocs(lignes_utiles)
     
-    perso = lire_perso(lignes)
-    objectif = lire_objectif(lignes)
-    blocs = lire_blocs(lignes)
-    
-    return perso, blocs, objectif
+    return perso, blocs, objectif, est_graphique

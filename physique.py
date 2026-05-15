@@ -26,7 +26,7 @@ def deplacer(personnage, gravite, pas):
 
 
 
-def placer_bord(personnage, bloc, cote):
+def placer_bord(personnage, bloc, cote, est_graphique = False):
     """
     Replace le personnage juste à l'extérieur du bloc, contre le bord indiqué.
 
@@ -139,7 +139,7 @@ def choc(personnage, lst_blocs):
 
 
 
-def pas(personnage, lst_blocs, objectif):
+def pas(personnage, lst_blocs, objectif, est_graphique):
     # 1. On mémorise la position avant le mouvement
     ancienne_pos = personnage["position"]
     
@@ -162,12 +162,12 @@ def pas(personnage, lst_blocs, objectif):
     
     return False
 
-def simuler(personnage, lst_blocs, objectif): # Ajoute objectif ici
+def simuler(personnage, lst_blocs, objectif, est_graphique): # Ajoute objectif ici
     trajectoire = [personnage["position"]]
     compteur = 0
     
     # Envoie l'objectif à la fonction pas
-    while not pas(personnage, lst_blocs, objectif): 
+    while not pas(personnage, lst_blocs, objectif, est_graphique): 
         trajectoire.append(personnage["position"])
         compteur += 1
         if compteur > 5000:
@@ -215,7 +215,7 @@ def clic_vers_vitesse(personnage, clic):
 
 
 
-def collision(personnage, lst_blocs):
+def collision(personnage, lst_blocs, est_graphique = False):
     """
     La fonction renvoie le bloc ayant eu un contact avec le personnage et None sinon.
     personnage : dictionnaire (position, vitesse)
@@ -225,6 +225,8 @@ def collision(personnage, lst_blocs):
     >>> collision(perso1, lst_bloc)
     ((105, 150), (300, 170))
     """
+    largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
+    hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
     perso_x1, perso_y1 = personnage["position"]
     perso_x2 = perso_x1 + LARGEUR_PERSO
     perso_y2 = perso_y1 + HAUTEUR_PERSO
@@ -235,7 +237,7 @@ def collision(personnage, lst_blocs):
             return bloc
     return None
 
-def victoire(personnage, objectif):
+def victoire(personnage, objectif, est_graphique = False):
     """
     La fonction renvoie True si le personnage a atteint l'objectif et False sinon.
     personnage : dictionnaire (position, vitesse)
@@ -250,6 +252,9 @@ def victoire(personnage, objectif):
     >>> victoire(perso2, objectif1)
     False
     """
+    largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
+    hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
+
     perso_x1, perso_y1 = personnage["position"]
     perso_x2 = perso_x1 + LARGEUR_PERSO
     perso_y2 = perso_y1 + HAUTEUR_PERSO

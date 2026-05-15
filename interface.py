@@ -2,7 +2,7 @@ from constantes import *
 from fltk import *
 import math
 
-def dessiner_objectif(objectif):
+def dessiner_objectif(objectif, est_graphique):
     """
     Dessine l'objectif sous forme d'un rectangle rouge.
     objectif : tuple de deux coins ((x1, y1), (x2, y2))
@@ -12,10 +12,15 @@ def dessiner_objectif(objectif):
     (10, 10, 50, 50)
     """
     (objectif_x1, objectif_y1), (objectif_x2, objectif_y2) = objectif
-    rectangle(objectif_x1, objectif_y1, objectif_x2, objectif_y2, couleur='red', remplissage='red', tag='objectif')
+    if est_graphique :
+        milieu_x = (objectif_x1 + objectif_x2) // 2
+        milieu_y = (objectif_y1 + objectif_y2) // 2
+        image(milieu_x, milieu_y, 'media/coffre.png', largeur = 140, hauteur = 90, tag='objectif')
+    else :
+        rectangle(objectif_x1, objectif_y1, objectif_x2, objectif_y2, couleur='red', remplissage='red', tag='objectif')
 
 
-def dessiner_blocs(lst_blocs):
+def dessiner_blocs(lst_blocs, est_graphique):
     """
     Dessine chaque bloc comme un rectangle coloré.
     lst_blocs : liste de tuples ((x1, y1), (x2, y2))
@@ -26,10 +31,13 @@ def dessiner_blocs(lst_blocs):
     (20, 20)
     """
     for bloc in lst_blocs:
-        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), couleur_bloc = bloc
-        rectangle(bloc_x1, bloc_y1, bloc_x2, bloc_y2, couleur = 'black', remplissage = couleur_bloc, tag='bloc')
+        if est_graphique :
+            pass
+        else:
+            (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), couleur_bloc = bloc
+            rectangle(bloc_x1, bloc_y1, bloc_x2, bloc_y2, couleur = 'black', remplissage = couleur_bloc, tag='bloc')
 
-def dessiner_personnage(personnage):
+def dessiner_personnage(personnage, est_graphique):
     """
     Dessine le personnage dans une couleur.
     personnage : dictionnaire avec la clé 'position'
@@ -44,8 +52,11 @@ def dessiner_personnage(personnage):
     perso_x2 = perso_x1 + LARGEUR_PERSO
     perso_y2 = perso_y1 + HAUTEUR_PERSO
     
-    rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
-    cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
+    if est_graphique :
+        image(perso_x1 + LARGEUR_NINJA // 2, perso_y1 + HAUTEUR_NINJA // 2, 'media/perso_ninja.png', largeur = 40, hauteur = 40)
+    else :
+        rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
+        cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
 
 
 def dessiner_fleche(personnage, clic):
