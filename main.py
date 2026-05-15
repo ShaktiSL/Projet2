@@ -64,12 +64,35 @@ def boucle_jeu(personnage, lst_blocs, objectif):
         # Dans main.py, ligne 57 environ :
         elif tev == 'ClicDroit':
             if viseur:
-                historique.append(dict(personnage))
-                # N'oublie pas d'ajouter 'objectif' (ou 'obj') ici !
-                trajectoire = simuler(personnage, lst_blocs, objectif) 
-                dessiner_trajectoire(trajectoire)
+                # 1. On sauvegarde la position AVANT le saut
+                ancienne_etat = dict(personnage)
+                historique.append(ancienne_etat)
+                
+                trajectoire = simuler(personnage, lst_blocs, objectif)
+                
+                for pos in trajectoire:
+                    personnage["position"] = pos
+                    
+                    # --- VÉRIFICATION SORTIE DE TERRAIN ---
+                    x, y = pos
+                    if x < -50 or x > LARGEUR_FENETRE + 50 or y > HAUTEUR_FENETRE + 50:
+                        print("Sortie de terrain détectée !")
+                        # On téléporte le perso à sa position d'avant
+                        personnage["position"] = ancienne_etat["position"]
+                        personnage["vitesse"] = (0, 0)
+                        break # On arrête l'animation tout de suite
+                    
+                    # Dessin (ton code d'avant)
+                    efface_tout()
+                    dessiner_blocs(lst_blocs)
+                    dessiner_objectif(objectif)
+                    dessiner_personnage(personnage)
+                    mise_a_jour()
+
                 nb_sauts += 1
                 viseur = False
+                # On dessine la trace finale après l'animation
+                dessiner_trajectoire(trajectoire)
  
         elif tev == 'Touche':
             t = touche(ev)
@@ -94,6 +117,7 @@ if __name__ == "__main__":
     fichier = menu_selection(LISTE_NIVEAUX)
 
     while continuer:
+        fichier = menu_selection(LISTE_NIVEAUX)
         # Si l'utilisateur a fermé la fenêtre ou cliqué sur Quitter
         if fichier == "QUITTER" or fichier is None:
             break

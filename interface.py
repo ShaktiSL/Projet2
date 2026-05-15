@@ -82,6 +82,8 @@ def dessiner_trajectoire(trajectoire):
         cercle(x + LARGEUR_PERSO // 2, y + HAUTEUR_PERSO // 2, 2,
                remplissage='white', tag='trajectoire')
 
+
+
 def afficher_victoire():
     """
     Affiche le message de victoire.
@@ -101,6 +103,8 @@ def afficher_victoire():
         
         if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
             attente_clic = False
+    efface('ecran_fin')
+    while donne_ev() is not None: pass
 
 
 def menu_selection(liste_niveaux):
