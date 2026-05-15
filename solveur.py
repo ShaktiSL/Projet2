@@ -1,7 +1,5 @@
 from physique import *
-from fltk import *
-from interface import *
-
+from constantes import *
 
 
 def generer_vitesses(pas_v):
@@ -20,9 +18,10 @@ def generer_vitesses(pas_v):
                 vitesses.append((vx, vy))
     return vitesses
 
+
 def position_approx(personnage, taille_grille):
     """Arrondit la position pour la mémoire du solveur.
-    
+
     >>> perso = {"position": (107.8, 203.1)}
     >>> position_approx(perso, 10)
     (10, 20)
@@ -34,41 +33,32 @@ def position_approx(personnage, taille_grille):
 
 
 def simuler_saut(personnage, blocs, objectif):
+    """
+    Simule un saut complet depuis la position actuelle du personnage
+    jusqu'à ce qu'il soit au repos. Travaille sur une copie du personnage
+    pour ne pas modifier l'original.
+    Retourne le nouveau personnage après le saut.
+    """
+    # On travaille sur une copie pour ne pas modifier l'original
+    perso_copie = {"position": personnage["position"], "vitesse": personnage["vitesse"]}
     en_mouvement = True
     compteur = 0
-    
-    print("Simulation en cours...") 
 
     while en_mouvement:
-        if pas(personnage, blocs): 
-            en_mouvement = False
-        
-        # --- ESSENTIEL POUR L'AFFICHAGE ---
-        efface_tout()
-        dessiner_blocs(blocs)
-        dessiner_objectif(objectif)
-        dessiner_personnage(personnage)
-        mise_a_jour()
-        
-        # --- ESSENTIEL POUR NE PAS FREEZER ---
-        donne_ev()    # Traite les événements système (Windows/Mac)
-        attente(5)   # Laisse respirer le processeur
-            
-        compteur += 1
-        # Sécurité : Si le saut dure plus de 5 secondes (500 * 10ms), on force l'arrêt
-        if compteur > 500:
-            print("Sécurité : Saut trop long, arrêt forcé.")
-            en_mouvement = False
-        
-        x, y = personnage["position"]
-        
-        # Sécurité : Si le perso sort trop loin par le haut ou les côtés
-        if y < -500 or x < -100 or x > LARGEUR_FENETRE + 100:
-            print("Le personnage est perdu dans l'espace, retour au calme.")
-            personnage["vitesse"] = (0, 0) # On stoppe sa course
+        # Bug corrigé : objectif passé en argument
+        if pas(perso_copie, blocs, objectif):
             en_mouvement = False
 
-    print("Fin de simulation.")
+        compteur += 1
+        if compteur > 500:
+            en_mouvement = False
+
+        x, y = perso_copie["position"]
+        if y < -500 or x < -100 or x > LARGEUR_FENETRE + 100:
+            perso_copie["vitesse"] = (0, 0)
+            en_mouvement = False
+
+    return perso_copie  # Bug corrigé : on retourne la copie
 
 
 def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max):
@@ -79,28 +69,54 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
     # 2. On vérifie si on doit s'arrêter
     if prof_max <= 0:
         return None
-    
+
     # 3. On vérifie si on est déjà passé par là
     position_grille = position_approx(personnage, 10)
     if position_grille in deja_explore:
         return None
     deja_explore.add(position_grille)
-    
+
     # 4. On teste les sauts
     for vitesse in liste_vitesses:
-        nouv_perso = simuler_saut(personnage, vitesse, blocs)
-        
+        # Bug corrigé : on crée une copie avec la nouvelle vitesse
+        perso_essai = {"position": personnage["position"], "vitesse": vitesse}
+
+        # Bug corrigé : bons arguments dans le bon ordre
+        nouv_perso = simuler_saut(perso_essai, blocs, objectif)
+
         chemin = resoudre(nouv_perso, blocs, objectif, liste_vitesses, deja_explore, prof_max - 1)
-        
+
         if chemin is not None:
             return [vitesse] + chemin
-            
+
     return None
 
-def resoudre_niveau(personnage, blocs, objectif, pas_v, prof_max):
-    """La fonction finale à appeler."""
+
+def resoudre_niveau(personnage, blocs, objectif, pas_v=10, prof_max=5):
+    """La fonction finale à appeler.
+    
+    personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
+    blocs      : liste de blocs du niveau
+    objectif   : tuple ((x1, y1), (x2, y2))
+    pas_v      : pas entre chaque vitesse testée (plus petit = plus précis mais plus lent)
+    prof_max   : nombre de sauts maximum autorisés
+    """
     vitesses = generer_vitesses(pas_v)
     return resoudre(personnage, blocs, objectif, vitesses, set(), prof_max)
 
 
+if __name__ == "__main__":
+    # Test rapide pour vérifier que le solveur fonctionne
+    perso = {"position": (100, 300), "vitesse": (0, 0)}
+    blocs = [((0, 350), (500, 370), "gray")]
+    objectif = ((200, 100), (240, 140))
 
+    print("Lancement du solveur...")
+    resultat = resoudre_niveau(perso, blocs, objectif, pas_v=10, prof_max=3)
+
+    if resultat is None:
+        print("Aucune solution trouvée.")
+    else:
+        print(f"Solution trouvée en {len(resultat)} saut(s) !")
+        for i, v in enumerate(resultat):
+            print(f"  Saut {i+1} : vitesse {v}")
