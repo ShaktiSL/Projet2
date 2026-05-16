@@ -1,7 +1,3 @@
-# -------------------------------------------------------------
-# Chargement d'un niveau depuis un fichier .txt
-# -------------------------------------------------------------
-
 def creer_perso(x,y):
     """
     La fonction crée le personnage avec une vitesse de départ toujours à (0,0)
@@ -36,13 +32,11 @@ def lire_blocs(lignes):
         points = propre.split(',')
         coords = ((int(points[0]), int(points[1])), (int(points[2]), int(points[3])))
         
-        # On vérifie s'il y a une 5ème valeur pour la couleur
         if len(points) == 5:
             couleur = points[4].strip()
         else:
-            couleur = 'gray' # Couleur par défaut si rien n'est précisé
+            couleur = 'gray'
             
-        # On stocke tout dans un tuple : ( (x1,y1), (x2,y2), "couleur" )
         lst_blocs.append((coords[0], coords[1], couleur))
     return lst_blocs
 

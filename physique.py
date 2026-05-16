@@ -7,11 +7,9 @@ def deplacer(personnage, gravite, pas):
     vx, vy = personnage["vitesse"]
     gx, gy = gravite
 
-    # nouvelle position
     x = x + pas * vx
     y = y + pas * vy
 
-    # nouvelle vitesse
     vx = vx + pas * gx
     vy = vy + pas * gy
 
@@ -19,10 +17,6 @@ def deplacer(personnage, gravite, pas):
     personnage["vitesse"] = (vx, vy)
 
 
-#p = {"position": (100, 100), "vitesse": (5, -10)}
-#deplacer(p, (0, 1), 1)
-#print(p["position"])
-#print(p["vitesse"])
 
 
 
@@ -91,7 +85,7 @@ def detecter_cote(personnage, bloc, vitesse):
         else:
             return "droite"
 
-    else:  # diagonale : on compare les distances aux bords
+    else: 
         dist_vertical   = abs(y - bloc_y1)
         dist_horizontal = abs(x - bloc_x1)
 
@@ -130,8 +124,7 @@ def choc(personnage, lst_blocs):
     personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
     lst_blocs  : liste de blocs ((x1, y1), (x2, y2))
     """
-    # À compléter
-    # Rappel : collision() vient de niveau.py (Dev A)
+
     bloc_touche = collision(personnage, lst_blocs)
 
     if bloc_touche is not None : 
@@ -140,33 +133,25 @@ def choc(personnage, lst_blocs):
 
 
 def pas(personnage, lst_blocs, objectif, est_graphique):
-    # 1. On mémorise la position avant le mouvement
     ancienne_pos = personnage["position"]
     
-    # 2. On déplace le personnage
     deplacer(personnage, GRAVITE, PAS)
 
-    # --- LE CHANGEMENT EST ICI ---
-    # Si on touche l'objectif maintenant, on ne gère PAS le choc
-    # On laisse le personnage "entrer" dans le rectangle rouge
     if victoire(personnage, objectif):
-        return True # On arrête le mouvement car on a gagné !
+        return True
 
-    # 3. Sinon, on gère les collisions normales avec les blocs gris
     choc(personnage, lst_blocs)
 
-    # 4. On vérifie si on est à l'arrêt
     vx, vy = personnage["vitesse"]
     if (vx == 0 and vy == 0) or (personnage["position"] == ancienne_pos):
         return True 
     
     return False
 
-def simuler(personnage, lst_blocs, objectif, est_graphique): # Ajoute objectif ici
+def simuler(personnage, lst_blocs, objectif, est_graphique): 
     trajectoire = [personnage["position"]]
     compteur = 0
     
-    # Envoie l'objectif à la fonction pas
     while not pas(personnage, lst_blocs, objectif, est_graphique): 
         trajectoire.append(personnage["position"])
         compteur += 1

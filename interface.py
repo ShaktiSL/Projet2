@@ -4,38 +4,33 @@ import math
 
 def dessiner_objectif(objectif, est_graphique):
     """
-    Dessine l'objectif sous forme d'un rectangle rouge.
-    objectif : tuple de deux coins ((x1, y1), (x2, y2))
-    >>> obj_test = ((10, 10), (50, 50))
-    >>> (x1, y1), (x2, y2) = obj_test
-    >>> x1, y1, x2, y2
-    (10, 10, 50, 50)
+    Gère l'affichage de l'objectif.
     """
-    (objectif_x1, objectif_y1), (objectif_x2, objectif_y2) = objectif
-    if est_graphique :
-        milieu_x = (objectif_x1 + objectif_x2) // 2
-        milieu_y = (objectif_y1 + objectif_y2) // 2
-        image(milieu_x, milieu_y, 'media/coffre.png', largeur = 140, hauteur = 90, tag='objectif')
-    else :
-        rectangle(objectif_x1, objectif_y1, objectif_x2, objectif_y2, couleur='red', remplissage='red', tag='objectif')
+    if est_graphique:
+        pass
+    else:
+        x1, y1 = objectif[0]
+        x2, y2 = objectif[1]
+        rectangle(x1, y1, x2, y2, couleur='yellow', remplissage='yellow')
 
 
 def dessiner_blocs(lst_blocs, est_graphique):
     """
-    Dessine chaque bloc comme un rectangle coloré.
-    lst_blocs : liste de tuples ((x1, y1), (x2, y2))
-    >>> blocs = [((0, 0), (20, 20)), ((100, 100), (120, 120))]
-    >>> len(blocs)
-    2
-    >>> blocs[0][1]
-    (20, 20)
+    Gère l'affichage des blocs. 
+    En mode graphique, les textures du décor cachent les blocs invisibles.
     """
-    for bloc in lst_blocs:
-        if est_graphique :
-            pass
-        else:
-            (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), couleur_bloc = bloc
-            rectangle(bloc_x1, bloc_y1, bloc_x2, bloc_y2, couleur = 'black', remplissage = couleur_bloc, tag='bloc')
+    if est_graphique:
+        pass
+    else:
+        for bloc in lst_blocs:
+            if len(bloc) == 3 and isinstance(bloc[0], tuple):
+                x1, y1 = bloc[0]
+                x2, y2 = bloc[1]
+                couleur_bloc = bloc[2]
+            else:
+                x1, y1, x2, y2 = bloc[0], bloc[1], bloc[2], bloc[3]
+                couleur_bloc = bloc[4] if len(bloc) > 4 else 'gray'
+            rectangle(x1, y1, x2, y2, couleur=couleur_bloc, remplissage=couleur_bloc)
 
 def dessiner_personnage(personnage, est_graphique):
     """
@@ -96,26 +91,21 @@ def dessiner_trajectoire(trajectoire):
 
 
 def afficher_victoire():
-    """
-    Affiche le message de victoire.
-    """
+    """Affiche le message de victoire (sans attendre d'événement)."""
     milieu_x = LARGEUR_FENETRE // 2
     milieu_y = HAUTEUR_FENETRE // 2
-    rectangle(milieu_x - 200, milieu_y - 50, milieu_x + 200, milieu_y + 50, couleur='black', remplissage='white', epaisseur=3, tag='ecran_fin')
-    texte(milieu_x, milieu_y, "VICTOIRE !", ancrage='center', taille=40, couleur='green', tag='ecran_fin')
-    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer", ancrage='center', taille=12, couleur='black', tag='ecran_fin')
-    
+
+    rectangle(milieu_x - 200, milieu_y - 50,
+              milieu_x + 200, milieu_y + 50,
+              couleur='black', remplissage='white',
+              epaisseur=3, tag='ecran_fin')
+    texte(milieu_x, milieu_y, "VICTOIRE !", ancrage='center',
+          taille=40, couleur='green', tag='ecran_fin')
+    texte(milieu_x, milieu_y + 35, "Cliquez pour continuer",
+          ancrage='center', taille=12,
+          couleur='black', tag='ecran_fin')
     mise_a_jour()
 
-    attente_clic = True
-    while attente_clic:
-        ev = donne_ev()
-        tev = type_ev(ev)
-        
-        if tev in ['ClicGauche', 'ClicDroit', 'Touche', 'Quitte']:
-            attente_clic = False
-    efface('ecran_fin')
-    while donne_ev() is not None: pass
 
 
 def menu_selection(liste_niveaux):

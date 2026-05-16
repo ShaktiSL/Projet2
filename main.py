@@ -5,10 +5,6 @@ from solveur import *
 from constantes import *
 import os
 
-# -------------------------------------------------------------
-# Programme principal
-# -------------------------------------------------------------
-
 def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
     """
     Boucle principale d'une partie.
@@ -17,11 +13,9 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
     viseur       = False    
     dernier_clic = (0, 0)
     nb_sauts     = 0         
-    # On initialise l'historique avec l'état de départ
     historique   = [dict(personnage)]
  
     while True:
-        # --- Affichage standard ---
         efface_tout()
         if est_graphique:
             image(LARGEUR_FENETRE // 2, HAUTEUR_FENETRE // 2, 'media/fond-jeux.png', 
@@ -36,24 +30,50 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
  
         texte(10, 10, f"Sauts : {nb_sauts}", ancrage='nw', taille=18, couleur='black')
 
-        # --- Sécurité : Sortie de terrain hors animation ---
         x, y = personnage["position"]
         if x < -100 or x > LARGEUR_FENETRE + 100 or y > HAUTEUR_FENETRE + 100:
             if len(historique) > 0:
                 etat = historique[-1]
                 personnage["position"] = etat["position"]
                 personnage["vitesse"] = (0, 0)
-                mise_a_jour() # On rafraîchit pour voir le retour
+                mise_a_jour()
                 viseur = False
  
         mise_a_jour()
  
-        # --- Vérification victoire ---
         if victoire(personnage, objectif, est_graphique):
+            efface_tout()
+            if est_graphique:
+                image(LARGEUR_FENETRE // 2, HAUTEUR_FENETRE // 2, 'media/fond-jeux.png', 
+                      largeur=LARGEUR_FENETRE, hauteur=HAUTEUR_FENETRE)
             afficher_victoire()
+            
+            texte(LARGEUR_FENETRE // 2, HAUTEUR_FENETRE - 80, 
+                  "CLIQUEZ ICI POUR REVENIR AU MENU", couleur='gold', taille=20, ancrage='center')
+            mise_a_jour()
+            
+            while donne_ev() is not None:
+                pass
+            
+            attente_clic = True
+            while attente_clic:
+                ev_victoire = donne_ev()
+                if ev_victoire is not None:
+                    type_v = type_ev(ev_victoire)
+                    if type_v in ['ClicGauche', 'ClicDroit', 'Touche']:
+                        attente_clic = False
+                    elif type_v == 'Quitte':
+                        return "QUITTER"
+                attente(0.01)
+            
+           
+            efface_tout()
+            mise_a_jour() 
+            while donne_ev() is not None:
+                pass
+                
             return "MENU"
  
-        # --- Gestion des événements ---
         ev = donne_ev()
         if ev is None:
             continue
@@ -69,14 +89,11 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
  
         elif tev == 'ClicDroit':
             if viseur:
-                # 1. On prépare le retour en arrière
                 ancienne_etat = dict(personnage)
                 historique.append(ancienne_etat)
                 
-                # 2. On calcule la trajectoire
                 trajectoire = simuler(personnage, lst_blocs, objectif, est_graphique)
                 
-                # 3. On lance l'animation (la boucle for)
                 for pos in trajectoire:
                     personnage["position"] = pos
                     
@@ -98,20 +115,17 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
                         personnage["vitesse"] = (0, 0)
                         break 
 
-                # 4. On valide le saut
                 nb_sauts += 1
                 viseur = False
-                # --- SURTOUT : Ne rien ajouter d'autre ici ! ---
  
         elif tev == 'Touche':
             t = touche(ev)
             if t == 'Escape':
                 return "MENU"
                 
-            # Touche Espace ou Retour Arrière pour annuler
             elif t == 'BackSpace' or t == 'space':
                 if len(historique) > 1: 
-                    historique.pop() # On retire l'état actuel
+                    historique.pop()
                     dernier_etat = historique[-1]
                     
                     personnage["position"] = dernier_etat["position"]
@@ -123,10 +137,8 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
                 else:
                     print("Déjà à la position de départ.")
             
-            # Touche S pour le solveur (évite le conflit avec Clic Droit)
             elif t == 's':
                 print("Appel du solveur...")
-                # On appelle resoudre_niveau (qui va lui-même appeler resoudre proprement)
                 solution = resoudre_niveau(personnage, lst_blocs, objectif, est_graphique, pas_v=20, prof_max=5)
                 
                 if solution:

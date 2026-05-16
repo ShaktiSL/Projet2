@@ -39,13 +39,11 @@ def simuler_saut(personnage, blocs, objectif, est_graphique):
     pour ne pas modifier l'original.
     Retourne le nouveau personnage après le saut.
     """
-    # On travaille sur une copie pour ne pas modifier l'original
     perso_copie = {"position": personnage["position"], "vitesse": personnage["vitesse"]}
     en_mouvement = True
     compteur = 0
 
     while en_mouvement:
-        # Bug corrigé : objectif passé en argument
         if pas(perso_copie, blocs, objectif, est_graphique):
             en_mouvement = False
 
@@ -58,31 +56,25 @@ def simuler_saut(personnage, blocs, objectif, est_graphique):
             perso_copie["vitesse"] = (0, 0)
             en_mouvement = False
 
-    return perso_copie  # Bug corrigé : on retourne la copie
+    return perso_copie  
 
 
 def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max, est_graphique):
-    # 1. On vérifie si on a gagné
     if victoire(personnage, objectif):
         return []
 
-    # 2. On vérifie si on doit s'arrêter
     if prof_max <= 0:
         return None
 
-    # 3. On vérifie si on est déjà passé par là
     position_grille = position_approx(personnage, 10)
     if position_grille in deja_explore:
         return None
     deja_explore.add(position_grille)
 
-    # 4. On teste les sauts
     print(f"DEBUG: type de liste_vitesses = {type(liste_vitesses)}")
     for vitesse in liste_vitesses:
-        # Bug corrigé : on crée une copie avec la nouvelle vitesse
         perso_essai = {"position": personnage["position"], "vitesse": vitesse}
 
-        # Bug corrigé : bons arguments dans le bon ordre
         nouv_perso = simuler_saut(perso_essai, blocs, objectif, est_graphique)
 
         chemin = resoudre(nouv_perso, blocs, objectif, liste_vitesses, deja_explore, prof_max - 1, est_graphique)
@@ -107,7 +99,6 @@ def resoudre_niveau(personnage, blocs, objectif, est_graphique, pas_v=10, prof_m
 
 
 if __name__ == "__main__":
-    # Test rapide pour vérifier que le solveur fonctionne
     perso = {"position": (100, 300), "vitesse": (0, 0)}
     blocs = [((0, 350), (500, 370), "gray")]
     objectif = ((200, 100), (240, 140))
