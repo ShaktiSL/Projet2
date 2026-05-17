@@ -5,6 +5,9 @@ import math
 def dessiner_objectif(objectif, est_graphique):
     """
     Gère l'affichage de l'objectif.
+    En mode graphique, l'objectif est invisible
+    objectif : tuple de deux tuples définissant les coordonnées de l'objectif
+    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
     """
     if est_graphique:
         pass
@@ -17,7 +20,9 @@ def dessiner_objectif(objectif, est_graphique):
 def dessiner_blocs(lst_blocs, est_graphique):
     """
     Gère l'affichage des blocs. 
-    En mode graphique, les textures du décor cachent les blocs invisibles.
+    En mode graphique, les blocs sont invisibles.
+    lst_blocs : Liste contenant les structures de chaque bloc
+    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
     """
     if est_graphique:
         pass
@@ -36,6 +41,7 @@ def dessiner_personnage(personnage, est_graphique):
     """
     Dessine le personnage dans une couleur.
     personnage : dictionnaire avec la clé 'position'
+    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
     >>> perso1 = {"position": (100, 100)}
     >>> LARGEUR_TEST, HAUTEUR_TEST = 20, 20
     >>> x1, y1 = perso1["position"]
@@ -58,6 +64,7 @@ def dessiner_fleche(personnage, clic):
     """
     Dessine une flèche rouge indiquant la direction et l'intensité du saut.
     personnage : dictionnaire avec la clé 'position'
+    clic : Coordonnées (x, y) sous forme de tuple du curseur de la souris lors du ClicGauche.
     """
     efface('prevision')
     perso_x, perso_y = personnage["position"]
@@ -91,7 +98,7 @@ def dessiner_trajectoire(trajectoire):
 
 
 def afficher_victoire():
-    """Affiche le message de victoire (sans attendre d'événement)."""
+    """Affiche le message de victoire."""
     milieu_x = LARGEUR_FENETRE // 2
     milieu_y = HAUTEUR_FENETRE // 2
 
@@ -111,7 +118,7 @@ def afficher_victoire():
 def menu_selection(liste_niveaux):
     """
     Affiche les niveaux centrés et renvoie le chemin du fichier choisi.
-    liste_niveaux : liste des différents niveaux
+    liste_niveaux : liste des différents niveaux.
     """
     x_min = (LARGEUR_FENETRE // 2) - (LARGEUR_BOUTON // 2)
     x_max = (LARGEUR_FENETRE // 2) + (LARGEUR_BOUTON // 2)

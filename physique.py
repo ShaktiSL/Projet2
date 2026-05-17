@@ -132,7 +132,7 @@ def choc(personnage, lst_blocs):
 
 
 
-def pas(personnage, lst_blocs, objectif, est_graphique):
+def pas(personnage, lst_blocs, objectif):
     ancienne_pos = personnage["position"]
     
     deplacer(personnage, GRAVITE, PAS)
@@ -205,16 +205,17 @@ def collision(personnage, lst_blocs, est_graphique = False):
     La fonction renvoie le bloc ayant eu un contact avec le personnage et None sinon.
     personnage : dictionnaire (position, vitesse)
     lst_blocs = liste de blocs ((x1,y1), (x2, y2))
+    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
     >>> lst_bloc = [((105, 150), (300, 170))]
-    >>> collision(perso1, lst_bloc)
+    >>> collision(perso1, lst_bloc, est_graphique)
     ((105, 150), (300, 170))
     """
     largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
     hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
     perso_x1, perso_y1 = personnage["position"]
-    perso_x2 = perso_x1 + LARGEUR_PERSO
-    perso_y2 = perso_y1 + HAUTEUR_PERSO
+    perso_x2 = perso_x1 + largeur
+    perso_y2 = perso_y1 + hauteur
 
     for bloc in lst_blocs : 
         (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _ = bloc
@@ -227,10 +228,11 @@ def victoire(personnage, objectif, est_graphique = False):
     La fonction renvoie True si le personnage a atteint l'objectif et False sinon.
     personnage : dictionnaire (position, vitesse)
     objectif : tuple de deux coins ((x1,y1), (x2, y2))
+    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
 
     >>> objectif1 = ((250,100), (270, 170))
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-    >>> victoire(perso1, objectif1)
+    >>> victoire(perso1, objectif1, est_graphique)
     True
 
     >>> perso2 = {"position": (230, 90), "vitesse": (0, 0)}
