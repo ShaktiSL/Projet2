@@ -1,10 +1,10 @@
+#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 from interface import *
 from fltk import *
 from chargement import *
 from solveur import *
 from constantes import *
 import os
-
 
 def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, fichier):
     """
@@ -17,11 +17,8 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
     historique     = [dict(personnage)]
     points_solveur = []
 
-    # MODIFICATION v2 : liste des points de trajectoire cumulés sur toute la partie (persistance)
-    # ANCIENNE VERSION : dessiner_trajectoire effaçait et ne gardait que le dernier saut
     points_trajectoire = []
 
-    # Référence à la trajectoire du dernier saut (pour le retour arrière)
     trajectoire_dernier_saut = []
 
     while True:
@@ -35,8 +32,6 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
         dessiner_bords(est_graphique)
         dessiner_objectif(objectif, est_graphique)
 
-        # MODIFICATION v2 : redessinage de tous les points accumulés à chaque frame
-        # ANCIENNE VERSION : pas de liste persistante, les cercles disparaissaient à efface_tout()
         for (pt_x, pt_y) in points_trajectoire:
             cercle(
                 pt_x + LARGEUR_PERSO // 2,
@@ -109,7 +104,6 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
         if type_evenement == 'Quitte':
             return "QUITTER", 0
         
-        # MODIFICATION v4 : Limitation de la liste pour éviter les ralentissements
         if len(points_trajectoire) > 2000:
             points_trajectoire = points_trajectoire[-2000:]
 
@@ -125,17 +119,13 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
 
                 trajectoire_saut = simuler(personnage, lst_blocs, objectif, est_graphique)
 
-                # MODIFICATION v3 : sous-échantillonnage de l'animation pour la fluidité.
-                # On n'affiche qu'une frame sur PAS_ANIMATION pour éviter que l'animation
-                # soit trop lente quand la trajectoire contient beaucoup de points.
-                # ANCIENNE VERSION : toutes les positions étaient affichées une par une.
+            
                 pas_animation = 6
 
                 for indice_saut in range(len(trajectoire_saut)):
                     position_saut = trajectoire_saut[indice_saut]
                     personnage["position"] = position_saut
 
-                    # On n'affiche qu'une frame sur pas_animation
                     if indice_saut % pas_animation == 0 or indice_saut == len(trajectoire_saut) - 1:
                         efface_tout()
                         if est_graphique:
@@ -145,7 +135,6 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
                         dessiner_blocs(lst_blocs, est_graphique)
                         dessiner_objectif(objectif, est_graphique)
 
-                        # Points déjà accumulés des sauts précédents
                         for (pt_x, pt_y) in points_trajectoire:
                             cercle(
                                 pt_x + LARGEUR_PERSO // 2,
@@ -156,7 +145,6 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
                                 tag='trajectoire'
                             )
 
-                        # Points du saut en cours (jusqu'à l'indice courant)
                         for sous_indice in range(0, indice_saut + 1, 5):
                             pt_x, pt_y = trajectoire_saut[sous_indice]
                             cercle(
@@ -180,8 +168,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
                         trajectoire_saut       = []
                         break
 
-                # MODIFICATION v2 : accumulation des points dans la liste persistante
-                # ANCIENNE VERSION : pas de liste persistante
+
                 for point in trajectoire_saut:
                     points_trajectoire.append(point)
 
@@ -204,8 +191,6 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique, meilleurs_score, 
                     personnage["vitesse"]  = (0, 0)
                     nb_sauts = max(0, nb_sauts - 1)
 
-                    # MODIFICATION v2 : retrait des points du dernier saut de la liste persistante
-                    # ANCIENNE VERSION : pas de liste persistante à gérer
                     nb_a_retirer = len(trajectoire_dernier_saut)
                     if nb_a_retirer > 0:
                         points_trajectoire = points_trajectoire[:-nb_a_retirer]
@@ -254,7 +239,7 @@ if __name__ == "__main__":
         if resultat == "QUITTER":
             continuer = False
         elif resultat == "MENU":
-            pass  # la boucle while appellera à nouveau menu_selection
+            pass 
         else:
             continuer = False
 

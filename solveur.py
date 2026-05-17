@@ -2,7 +2,7 @@
 from physique import *
 from constantes import *
 
-
+#Fonction fait par Mohamed
 def generer_vitesses(pas_v):
     """Génère tous les sauts possibles.
 
@@ -19,7 +19,7 @@ def generer_vitesses(pas_v):
                 vitesses.append((vx, vy))
     return vitesses
 
-
+#Fonction fait par Mohamed
 def position_approx(personnage, taille_grille):
     """Arrondit la position pour la mémoire du solveur.
 
@@ -32,7 +32,7 @@ def position_approx(personnage, taille_grille):
     x, y = personnage["position"]
     return (int(x // taille_grille), int(y // taille_grille))
 
-
+#Fonction fait par Mohamed
 def simuler_saut(personnage, blocs, objectif, est_graphique):
     """
     Simule un saut complet depuis la position actuelle du personnage
@@ -65,7 +65,7 @@ def simuler_saut(personnage, blocs, objectif, est_graphique):
 
     return perso_copie  
 
-
+#Fonction fait par Mohamed
 def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max, est_graphique):
     """
     Recherche récursivement un chemin vers l'objectif.
@@ -94,6 +94,7 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
 
     return None
 
+#Fonction fait par Mohamed
 def resoudre_niveau(personnage, blocs, objectif, est_graphique, pas_v=10, prof_max=5):
     """La fonction finale à appeler.
     

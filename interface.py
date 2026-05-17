@@ -1,9 +1,8 @@
+#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 from constantes import *
 from fltk import *
 import math
-
-# MODIFICATION v3 : dictionnaire associant chaque couleur de surface à son nom affiché
-# ANCIENNE VERSION : n'existait pas — les blocs n'avaient pas de légende.
+#Fichier principalement géré par Shaktinath
 NOM_SURFACES = {
     'gray'   : 'Normal',
     'blue'   : 'Glace',
@@ -13,7 +12,7 @@ NOM_SURFACES = {
     'purple' : 'Colle',
 }
 
-
+#Fonction fait par Shaktinath
 def dessiner_objectif(objectif, est_graphique):
     """
     Gère l'affichage de l'objectif.
@@ -28,15 +27,11 @@ def dessiner_objectif(objectif, est_graphique):
         x2, y2 = objectif[1]
         rectangle(x1, y1, x2, y2, couleur='yellow', remplissage='yellow')
 
-
+#Fonction fait par Shaktinath
 def dessiner_blocs(lst_blocs, est_graphique):
     """
     Gère l'affichage des blocs.
     En mode graphique, les blocs sont invisibles.
-    MODIFICATION v3 : les nouvelles couleurs de surface (blue, brown, green, orange, purple)
-    sont maintenant dessinées avec leur couleur réelle au lieu de 'gray' par défaut.
-    ANCIENNE VERSION : seule la couleur lue dans le fichier était utilisée, sans correspondance
-    particulière — le comportement visuel était identique mais sans signification de surface.
     lst_blocs : liste contenant les structures de chaque bloc
     est_graphique : bool
     """
@@ -54,13 +49,10 @@ def dessiner_blocs(lst_blocs, est_graphique):
             rectangle(x1, y1, x2, y2, couleur='black', remplissage=couleur_bloc)
 
 
+#Fonction fait par Shaktinath
 def dessiner_personnage(personnage, est_graphique):
     """
     Dessine le personnage.
-    MODIFICATION v2 : en mode géométrique, affiche l'émoji 🐑 à la place du carré blanc + cercle rose.
-    ANCIENNE VERSION :
-        rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
-        cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
     personnage : dictionnaire avec la clé 'position'
     est_graphique : bool
     >>> perso1 = {"position": (100, 100)}
@@ -79,10 +71,6 @@ def dessiner_personnage(personnage, est_graphique):
             hauteur=40
         )
     else:
-        # MODIFICATION v2 : émoji mouton centré sur la hitbox du personnage
-        # ANCIENNE VERSION :
-        #   rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
-        #   cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
         texte(
             centre_x + LARGEUR_PERSO // 2,
             centre_y + HAUTEUR_PERSO // 2,
@@ -92,18 +80,10 @@ def dessiner_personnage(personnage, est_graphique):
             tag='perso'
         )
 
-
+#Fonction fait par Shaktinath
 def dessiner_fleche(personnage, clic):
     """
     Dessine une vraie flèche rouge indiquant la direction et l'intensité du saut.
-    MODIFICATION v2 : longueur maximale de la flèche ramenée à VMAX / 2 (visuel seulement,
-    la vitesse réelle du personnage n'est pas modifiée ici).
-    MODIFICATION v3 : ajout d'une garde contre la division par zéro quand le clic
-    est exactement sur le personnage.
-    ANCIENNE VERSION :
-        if distance > VMAX:
-            ratio = VMAX / distance   ← utilisait VMAX sans garde zéro
-        fleche(start_x, start_y, end_x, end_y, ...)
     personnage : dictionnaire avec la clé 'position'
     clic : tuple (x, y) des coordonnées du curseur au moment du clic gauche
     """
@@ -117,8 +97,6 @@ def dessiner_fleche(personnage, clic):
     direction_y    = clic_y - centre_y
     longueur       = math.sqrt(direction_x**2 + direction_y**2)
 
-    # MODIFICATION v3 : garde contre la division par zéro (clic sur le personnage)
-    # ANCIENNE VERSION : pas de vérification, pouvait provoquer une erreur
     if longueur == 0:
         return
     
@@ -129,21 +107,13 @@ def dessiner_fleche(personnage, clic):
 
 
 
-# Petite modification réalisée par David
+#Petite modification réalisée par David
 def dessiner_trajectoire(trajectoire):
     """
     Dessine les points de trajectoire du saut en cours.
-    MODIFICATION v2 : efface('trajectoire') supprimé → les points s'accumulent d'un saut à l'autre.
-    MODIFICATION v3 : on ne dessine qu'un point sur PAS_AFFICHAGE pour alléger l'affichage
-    et rendre l'animation plus fluide.
-    ANCIENNE VERSION :
-        efface('trajectoire')
-        for (x, y) in trajectoire:
-            cercle(x + ..., y + ..., 2, couleur='black', remplissage='white', tag='trajectoire')
     trajectoire : liste de positions (x, y)
     """
-    # MODIFICATION v3 : sous-échantillonnage — 1 point affiché sur PAS_AFFICHAGE
-    # ANCIENNE VERSION : tous les points étaient affichés
+
     pas_affichage = 5
 
     for rang in range(0, len(trajectoire), pas_affichage):
@@ -158,7 +128,7 @@ def dessiner_trajectoire(trajectoire):
         )
 
 
-# Fonction réalisée par David
+#Fonction réalisée par David
 def dessiner_bords(est_graphique):
     """Dessine le contour de la fenêtre (mode géométrique seulement)."""
     if not est_graphique:
@@ -166,7 +136,7 @@ def dessiner_bords(est_graphique):
         rectangle(0, 0, LARGEUR_FENETRE, HAUTEUR_FENETRE,
                   couleur='black', remplissage='', epaisseur=epaisseur_bord)
 
-
+#Fonction fait par Shaktinath
 def afficher_victoire():
     """Affiche le message de victoire."""
     milieu_x = LARGEUR_FENETRE // 2
@@ -183,7 +153,7 @@ def afficher_victoire():
           couleur='black', tag='ecran_fin')
     mise_a_jour()
 
-
+#Fonction fait par Shaktinath
 def menu_selection(liste_niveaux):
     """
     Affiche les niveaux centrés et renvoie le chemin du fichier choisi.
@@ -204,8 +174,7 @@ def menu_selection(liste_niveaux):
             rectangle(x_min, y_min, x_max, y_max, couleur='black', remplissage='lightgray')
             texte(LARGEUR_FENETRE // 2, (y_min + y_max) // 2, nom, ancrage='center', taille=16)
 
-        # MODIFICATION v3 : affichage de la légende des surfaces en bas du menu
-        # ANCIENNE VERSION : pas de légende
+
         decalage_legende = 0
         for couleur_surface, nom_surface in NOM_SURFACES.items():
             rectangle(x_min, 450 + decalage_legende, x_min + 20, 470 + decalage_legende,
