@@ -1,4 +1,3 @@
-#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 # Fenêtre
 LARGEUR_FENETRE = 1500
 HAUTEUR_FENETRE = 700
@@ -11,8 +10,8 @@ LARGEUR_NINJA = 60
 HAUTEUR_NINJA = 60
 
 # Physique
-GRAVITE = (0, 7)   
-PAS     = 0.05    
+GRAVITE = (0, 15)   
+PAS     = 0.1  
 VMAX    = 50    
 
 # Menu

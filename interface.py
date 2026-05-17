@@ -1,14 +1,25 @@
-#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 from constantes import *
 from fltk import *
 import math
 
+# MODIFICATION v3 : dictionnaire associant chaque couleur de surface à son nom affiché
+# ANCIENNE VERSION : n'existait pas — les blocs n'avaient pas de légende.
+NOM_SURFACES = {
+    'gray'   : 'Normal',
+    'blue'   : 'Glace',
+    'brown'  : 'Boue',
+    'green'  : 'Élastique',
+    'orange' : 'Trampoline',
+    'purple' : 'Colle',
+}
+
+
 def dessiner_objectif(objectif, est_graphique):
     """
     Gère l'affichage de l'objectif.
-    En mode graphique, l'objectif est invisible
+    En mode graphique, l'objectif est invisible.
     objectif : tuple de deux tuples définissant les coordonnées de l'objectif
-    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
+    est_graphique : bool qui indique le mode (0 formes géométriques, 1 textures)
     """
     if est_graphique:
         pass
@@ -20,88 +31,146 @@ def dessiner_objectif(objectif, est_graphique):
 
 def dessiner_blocs(lst_blocs, est_graphique):
     """
-    Gère l'affichage des blocs. 
+    Gère l'affichage des blocs.
     En mode graphique, les blocs sont invisibles.
-    lst_blocs : Liste contenant les structures de chaque bloc
-    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
+    MODIFICATION v3 : les nouvelles couleurs de surface (blue, brown, green, orange, purple)
+    sont maintenant dessinées avec leur couleur réelle au lieu de 'gray' par défaut.
+    ANCIENNE VERSION : seule la couleur lue dans le fichier était utilisée, sans correspondance
+    particulière — le comportement visuel était identique mais sans signification de surface.
+    lst_blocs : liste contenant les structures de chaque bloc
+    est_graphique : bool
     """
     if est_graphique:
         pass
     else:
         for bloc in lst_blocs:
             if len(bloc) == 3 and isinstance(bloc[0], tuple):
-                x1, y1 = bloc[0]
-                x2, y2 = bloc[1]
+                x1, y1      = bloc[0]
+                x2, y2      = bloc[1]
                 couleur_bloc = bloc[2]
             else:
                 x1, y1, x2, y2 = bloc[0], bloc[1], bloc[2], bloc[3]
-                couleur_bloc = bloc[4] if len(bloc) > 4 else 'gray'
-            rectangle(x1, y1, x2, y2, couleur=couleur_bloc, remplissage=couleur_bloc)
+                couleur_bloc    = bloc[4] if len(bloc) > 4 else 'gray'
+            rectangle(x1, y1, x2, y2, couleur='black', remplissage=couleur_bloc)
+
 
 def dessiner_personnage(personnage, est_graphique):
     """
-    Dessine le personnage dans une couleur.
-    personnage : dictionnaire avec la clé 'position'
-    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
-    >>> perso1 = {"position": (100, 100)}
-    >>> LARGEUR_TEST, HAUTEUR_TEST = 20, 20
-    >>> x1, y1 = perso1["position"]
-    >>> x2, y2 = x1 + LARGEUR_TEST, y1 + HAUTEUR_TEST
-    >>> x1, y1, x2, y2
-    (100, 100, 120, 120)
-    """
-    perso_x1, perso_y1 = personnage["position"]
-    perso_x2 = perso_x1 + LARGEUR_PERSO
-    perso_y2 = perso_y1 + HAUTEUR_PERSO
-    
-    if est_graphique :
-        image(perso_x1 + LARGEUR_NINJA // 2, perso_y1 + HAUTEUR_NINJA // 2, 'media/perso_ninja.png', largeur = 40, hauteur = 40)
-    else :
+    Dessine le personnage.
+    MODIFICATION v2 : en mode géométrique, affiche l'émoji 🐑 à la place du carré blanc + cercle rose.
+    ANCIENNE VERSION :
         rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
         cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
+    personnage : dictionnaire avec la clé 'position'
+    est_graphique : bool
+    >>> perso1 = {"position": (100, 100)}
+    >>> x1, y1 = perso1["position"]
+    >>> x1, y1
+    (100, 100)
+    """
+    centre_x, centre_y = personnage["position"]
+
+    if est_graphique:
+        image(
+            centre_x + LARGEUR_NINJA // 2,
+            centre_y + HAUTEUR_NINJA // 2,
+            'media/perso_ninja.png',
+            largeur=40,
+            hauteur=40
+        )
+    else:
+        # MODIFICATION v2 : émoji mouton centré sur la hitbox du personnage
+        # ANCIENNE VERSION :
+        #   rectangle(perso_x1, perso_y1, perso_x2, perso_y2, couleur='black', remplissage='white', tag='perso')
+        #   cercle(perso_x1 + 15, perso_y1 + 10, 5, remplissage='pink')
+        texte(
+            centre_x + LARGEUR_PERSO // 2,
+            centre_y + HAUTEUR_PERSO // 2,
+            "🐑",
+            ancrage='center',
+            taille=18,
+            tag='perso'
+        )
 
 
 def dessiner_fleche(personnage, clic):
     """
-    Dessine une flèche rouge indiquant la direction et l'intensité du saut.
+    Dessine une vraie flèche rouge indiquant la direction et l'intensité du saut.
+    MODIFICATION v2 : longueur maximale de la flèche ramenée à VMAX / 2 (visuel seulement,
+    la vitesse réelle du personnage n'est pas modifiée ici).
+    MODIFICATION v3 : ajout d'une garde contre la division par zéro quand le clic
+    est exactement sur le personnage.
+    ANCIENNE VERSION :
+        if distance > VMAX:
+            ratio = VMAX / distance   ← utilisait VMAX sans garde zéro
+        fleche(start_x, start_y, end_x, end_y, ...)
     personnage : dictionnaire avec la clé 'position'
-    clic : Coordonnées (x, y) sous forme de tuple du curseur de la souris lors du ClicGauche.
+    clic : tuple (x, y) des coordonnées du curseur au moment du clic gauche
     """
     efface('prevision')
-    perso_x, perso_y = personnage["position"]
-    start_x = perso_x + LARGEUR_PERSO / 2
-    start_y = perso_y + HAUTEUR_PERSO / 2
+
+    centre_x = personnage["position"][0] + LARGEUR_PERSO / 2
+    centre_y = personnage["position"][1] + HAUTEUR_PERSO / 2
 
     clic_x, clic_y = clic
-    vecteur_x = clic_x - start_x
-    vecteur_y = clic_y - start_y
-    distance = math.sqrt(vecteur_x**2 + vecteur_y**2)
+    direction_x    = clic_x - centre_x
+    direction_y    = clic_y - centre_y
+    longueur       = math.sqrt(direction_x**2 + direction_y**2)
 
-    if distance > VMAX:
-        ratio = VMAX / distance
-        end_x = start_x + vecteur_x * ratio
-        end_y = start_y + vecteur_y * ratio
-    else:
-        end_x = clic_x
-        end_y = clic_y
-    fleche(start_x, start_y, end_x, end_y, couleur='red', epaisseur=3, tag='prevision')
+    # MODIFICATION v3 : garde contre la division par zéro (clic sur le personnage)
+    # ANCIENNE VERSION : pas de vérification, pouvait provoquer une erreur
+    if longueur == 0:
+        return
+    
+    bout_x = clic_x
+    bout_y = clic_y
 
+    fleche(centre_x, centre_y, bout_x, bout_y, couleur='red', epaisseur=3, tag='prevision')
+
+
+
+# Petite modification réalisée par David
 def dessiner_trajectoire(trajectoire):
     """
-    Dessine tous les points de la trajectoire du dernier saut.
+    Dessine les points de trajectoire du saut en cours.
+    MODIFICATION v2 : efface('trajectoire') supprimé → les points s'accumulent d'un saut à l'autre.
+    MODIFICATION v3 : on ne dessine qu'un point sur PAS_AFFICHAGE pour alléger l'affichage
+    et rendre l'animation plus fluide.
+    ANCIENNE VERSION :
+        efface('trajectoire')
+        for (x, y) in trajectoire:
+            cercle(x + ..., y + ..., 2, couleur='black', remplissage='white', tag='trajectoire')
     trajectoire : liste de positions (x, y)
     """
-    efface('trajectoire')
-    for (x, y) in trajectoire:
-        cercle(x + LARGEUR_PERSO // 2, y + HAUTEUR_PERSO // 2, 2,
-               remplissage='white', tag='trajectoire')
+    # MODIFICATION v3 : sous-échantillonnage — 1 point affiché sur PAS_AFFICHAGE
+    # ANCIENNE VERSION : tous les points étaient affichés
+    pas_affichage = 5
 
+    for rang in range(0, len(trajectoire), pas_affichage):
+        pos_x, pos_y = trajectoire[rang]
+        cercle(
+            pos_x + LARGEUR_PERSO // 2,
+            pos_y + HAUTEUR_PERSO // 2,
+            3,
+            couleur='black',
+            remplissage='white',
+            tag='trajectoire'
+        )
+
+
+# Fonction réalisée par David
+def dessiner_bords(est_graphique):
+    """Dessine le contour de la fenêtre (mode géométrique seulement)."""
+    if not est_graphique:
+        epaisseur_bord = 3
+        rectangle(0, 0, LARGEUR_FENETRE, HAUTEUR_FENETRE,
+                  couleur='black', remplissage='', epaisseur=epaisseur_bord)
 
 
 def afficher_victoire():
     """Affiche le message de victoire."""
     milieu_x = LARGEUR_FENETRE // 2
-    milieu_y = HAUTEUR_FENETRE // 2
+    milieu_y  = HAUTEUR_FENETRE // 2
 
     rectangle(milieu_x - 200, milieu_y - 50,
               milieu_x + 200, milieu_y + 50,
@@ -115,7 +184,6 @@ def afficher_victoire():
     mise_a_jour()
 
 
-
 def menu_selection(liste_niveaux):
     """
     Affiche les niveaux centrés et renvoie le chemin du fichier choisi.
@@ -124,34 +192,48 @@ def menu_selection(liste_niveaux):
     x_min = (LARGEUR_FENETRE // 2) - (LARGEUR_BOUTON // 2)
     x_max = (LARGEUR_FENETRE // 2) + (LARGEUR_BOUTON // 2)
     selection = None
+
     while selection is None:
         efface_tout()
-        texte(LARGEUR_FENETRE // 2, 50, "Menu des niveaux", ancrage='center', taille=30, couleur='darkblue')
+        texte(LARGEUR_FENETRE // 2, 50, "Menu des niveaux",
+              ancrage='center', taille=30, couleur='darkblue')
 
-        for i, nom in enumerate(liste_niveaux):
-            y_min = 150 + (i * 80) 
-            y_max = 210 + (i * 80)
+        for rang, nom in enumerate(liste_niveaux):
+            y_min = 150 + (rang * 80)
+            y_max = 210 + (rang * 80)
             rectangle(x_min, y_min, x_max, y_max, couleur='black', remplissage='lightgray')
             texte(LARGEUR_FENETRE // 2, (y_min + y_max) // 2, nom, ancrage='center', taille=16)
-        mise_a_jour()
-        ev = donne_ev()
-        if ev is not None : 
-            tev = type_ev(ev)
 
-            if tev == 'ClicGauche':
-                x, y = abscisse(ev), ordonnee(ev)
-                for i, nom in enumerate(liste_niveaux):
-                    y_min = 150 + (i * 80)
-                    y_max = 210 + (i * 80)
-                    if x_min <= x <= x_max and y_min <= y <= y_max:
+        # MODIFICATION v3 : affichage de la légende des surfaces en bas du menu
+        # ANCIENNE VERSION : pas de légende
+        decalage_legende = 0
+        for couleur_surface, nom_surface in NOM_SURFACES.items():
+            rectangle(x_min, 450 + decalage_legende, x_min + 20, 470 + decalage_legende,
+                      couleur='black', remplissage=couleur_surface)
+            texte(x_min + 30, 460 + decalage_legende, nom_surface,
+                  ancrage='w', taille=13, couleur='black')
+            decalage_legende += 25
+
+        mise_a_jour()
+        evenement = donne_ev()
+
+        if evenement is not None:
+            type_evenement = type_ev(evenement)
+
+            if type_evenement == 'ClicGauche':
+                clic_x, clic_y = abscisse(evenement), ordonnee(evenement)
+                for rang, nom in enumerate(liste_niveaux):
+                    y_min = 150 + (rang * 80)
+                    y_max = 210 + (rang * 80)
+                    if x_min <= clic_x <= x_max and y_min <= clic_y <= y_max:
                         selection = nom
 
-            elif tev == 'Quitte': 
+            elif type_evenement == 'Quitte':
                 return "QUITTER"
 
     return selection
 
-    
+
 if __name__ == "__main__":
     from doctest import testmod
     testmod()

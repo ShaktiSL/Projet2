@@ -1,141 +1,239 @@
-#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 from constantes import *
 import math
 
 
-def deplacer(personnage, gravite, pas):
-    x, y = personnage["position"]
-    vx, vy = personnage["vitesse"]
-    gx, gy = gravite
+def deplacer(personnage, gravite, pas_temps):
+    # MODIFICATION v2 : renommage du paramètre 'pas' → 'pas_temps' (plus descriptif)
+    # ANCIENNE VERSION : def deplacer(personnage, gravite, pas):
 
-    x = x + pas * vx
-    y = y + pas * vy
+    position_x, position_y = personnage["position"]
+    vitesse_x, vitesse_y   = personnage["vitesse"]
+    gravite_x, gravite_y   = gravite
 
-    vx = vx + pas * gx
-    vy = vy + pas * gy
+    position_x = position_x + pas_temps * vitesse_x
+    position_y = position_y + pas_temps * vitesse_y
 
-    personnage["position"] = (x,y)
-    personnage["vitesse"] = (vx, vy)
+    vitesse_x = vitesse_x + pas_temps * gravite_x
+    vitesse_y = vitesse_y + pas_temps * gravite_y
 
-
-
-
-
-def placer_bord(personnage, bloc, cote, est_graphique = False):
-    """
-    Replace le personnage juste à l'extérieur du bloc, contre le bord indiqué.
-
-    personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
-    bloc       : tuple ((x1, y1), (x2, y2))
-    cote       : chaîne parmi "haut", "bas", "gauche", "droite"
-
-    >>> p = {"position": (50, 98), "vitesse": (0, 5)}
-    >>> placer_bord(p, ((0, 100), (200, 200)), "haut")
-    >>> p["position"]
-    (50, 80)
-    """
-    x, y = personnage["position"]
-    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _= bloc
-
-    if cote == "haut":
-        y = bloc_y1 - HAUTEUR_PERSO
-    elif cote == "bas":
-        y = bloc_y2
-    elif cote == "gauche":
-        x = bloc_x1 - LARGEUR_PERSO
-    elif cote == "droite":
-        x = bloc_x2
-
-    personnage["position"] = (x, y)
-
-p = {"position": (50, 98), "vitesse": (0, 5)}
-placer_bord(p, ((0, 100), (200, 200), "gray"), "haut")
-print(p["position"])
+    personnage["position"] = (position_x, position_y)
+    personnage["vitesse"]  = (vitesse_x, vitesse_y)
 
 
-def detecter_cote(personnage, bloc, vitesse):
-    """
-    Détermine par quel côté du bloc le personnage est entré en collision,
-    en fonction de la direction de sa vitesse.
-    Retourne "haut", "bas", "gauche" ou "droite".
+def placer_bord(personnage, bloc, cote_collision, est_graphique=False):
+    # MODIFICATION v2 : renommage du paramètre 'cote' → 'cote_collision'
+    # ANCIENNE VERSION : def placer_bord(personnage, bloc, cote, est_graphique=False):
 
-    personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
-    bloc       : tuple ((x1, y1), (x2, y2))
-    vitesse    : tuple (vx, vy) — la vitesse au moment du choc
+    position_x, position_y = personnage["position"]
+    (bord_gauche, bord_haut), (bord_droit, bord_bas), _ = bloc
 
-    >>> p = {"position": (50, 95), "vitesse": (0, 5)}
-    >>> detecter_cote(p, ((0, 100), (200, 200)), (0, 5))
-    'haut'
-    >>> p2 = {"position": (50, 205), "vitesse": (0, -5)}
-    >>> detecter_cote(p2, ((0, 100), (200, 200)), (0, -5))
-    'bas'
-    """
-    x, y = personnage["position"]
-    vx, vy = vitesse
-    (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _ = bloc
+    if cote_collision == "haut":
+        position_y = bord_haut - HAUTEUR_PERSO - 0.1
+    elif cote_collision == "bas":
+        position_y = bord_bas + 0.1
+    elif cote_collision == "gauche":
+        position_x = bord_gauche - LARGEUR_PERSO - 0.1
+    elif cote_collision == "droite":
+        position_x = bord_droit + 0.1
 
-    if vy != 0 and vx == 0:
-        if vy > 0:
-            return "haut"
-        else:
-            return "bas"
-
-    elif vx != 0 and vy == 0:
-        if vx > 0:
-            return "gauche"
-        else:
-            return "droite"
-
-    else: 
-        dist_vertical   = abs(y - bloc_y1)
-        dist_horizontal = abs(x - bloc_x1)
-
-        if dist_vertical <= dist_horizontal:
-            if vy > 0:
-                return "haut"
-            else:
-                return "bas"
-        else:
-            if vx > 0:
-                return "gauche"
-            else:
-                return "droite"
-    
+    personnage["position"] = (position_x, position_y)
 
 
+def detecter_cote(personnage, bloc, vitesse_actuelle):
+    # MODIFICATION v2 : renommage 'vitesse' → 'vitesse_actuelle', lambda remplacé par fonction nommée
+    # ANCIENNE VERSION : def detecter_cote(personnage, bloc, vitesse):
+    #                    return min(candidats, key=lambda c: c[1])[0]
 
+    position_x, position_y       = personnage["position"]
+    deplacement_x, deplacement_y = vitesse_actuelle
+    (bord_gauche, bord_haut), (bord_droit, bord_bas), _ = bloc
+
+    penetration_haut   = (position_y + HAUTEUR_PERSO) - bord_haut
+    penetration_bas    = bord_bas    - position_y
+    penetration_gauche = (position_x + LARGEUR_PERSO) - bord_gauche
+    penetration_droite = bord_droit  - position_x
+
+    candidats_cotes = []
+    if deplacement_y >= 0 and penetration_haut > 0:
+        candidats_cotes.append(("haut",   penetration_haut))
+    if deplacement_y <= 0 and penetration_bas > 0:
+        candidats_cotes.append(("bas",    penetration_bas))
+    if deplacement_x >= 0 and penetration_gauche > 0:
+        candidats_cotes.append(("gauche", penetration_gauche))
+    if deplacement_x <= 0 and penetration_droite > 0:
+        candidats_cotes.append(("droite", penetration_droite))
+
+    if not candidats_cotes:
+        candidats_cotes = [
+            ("haut",   penetration_haut),
+            ("bas",    penetration_bas),
+            ("gauche", penetration_gauche),
+            ("droite", penetration_droite),
+        ]
+
+    def penetration_du_candidat(candidat):
+        return candidat[1]
+
+    meilleur_cote, _ = min(candidats_cotes, key=penetration_du_candidat)
+    return meilleur_cote
+
+
+# ---------------------------------------------------------------------------
+# MODIFICATION v3 : ajout de 5 nouvelles fonctions de choc selon le type de surface.
+# ANCIENNE VERSION : une seule fonction choc_mou() était appelée pour tous les blocs.
+# Chaque fonction est déclenchée par la couleur du bloc (voir choc() plus bas).
+# ---------------------------------------------------------------------------
 
 def choc_mou(personnage, bloc):
-
-    vx, vy = personnage["vitesse"]
-    cote = detecter_cote(personnage, bloc, (vx, vy))
-    placer_bord(personnage, bloc, cote)
+    """Choc mou — surface grise ('gray') : arrêt complet sur le bord touché."""
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
     personnage["vitesse"] = (0, 0)
-    
 
 
+def choc_glace(personnage, bloc):
+    """
+    MODIFICATION v3 (NOUVEAU) — surface glace ('blue').
+    Glissement à vitesse constante : la composante perpendiculaire au bord est annulée,
+    la composante parallèle est conservée intacte.
+    ANCIENNE VERSION : n'existait pas.
+    """
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
+
+    if cote_touche == "haut" or cote_touche == "bas":
+        personnage["vitesse"] = (vitesse_x, 0)
+    else:
+        personnage["vitesse"] = (0, vitesse_y)
+
+
+def choc_boue(personnage, bloc):
+    """
+    MODIFICATION v3 (NOUVEAU) — surface boue ('brown').
+    Dérapage : glissement avec friction, la vitesse parallèle est réduite à chaque contact.
+    ANCIENNE VERSION : n'existait pas.
+    """
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
+
+    facteur_friction = 0.6
+
+    if cote_touche == "haut" or cote_touche == "bas":
+        personnage["vitesse"] = (vitesse_x * facteur_friction, 0)
+    else:
+        personnage["vitesse"] = (0, vitesse_y * facteur_friction)
+
+
+def choc_elastique(personnage, bloc):
+    """
+    MODIFICATION v3 (NOUVEAU) — surface élastique ('green').
+    Rebond parfait : la vitesse dans la direction du choc est inversée,
+    l'autre composante est préservée.
+    ANCIENNE VERSION : n'existait pas.
+    """
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
+
+    if cote_touche == "haut" or cote_touche == "bas":
+        personnage["vitesse"] = (vitesse_x, -vitesse_y)
+    else:
+        personnage["vitesse"] = (-vitesse_x, vitesse_y)
+
+
+def choc_amorti(personnage, bloc):
+    """
+    MODIFICATION v3 (NOUVEAU) — surface amortie ('orange').
+    Rebond avec perte de vitesse : le personnage rebondit mais perd 50% de sa vitesse.
+    En dessous d'un seuil minimal, le rebond est annulé pour éviter les micro-oscillations.
+    ANCIENNE VERSION : n'existait pas.
+    """
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
+
+    facteur_amortissement = 0.5
+    seuil_arret           = 1.0
+
+    if cote_touche == "haut" or cote_touche == "bas":
+        nouvelle_vy = -vitesse_y * facteur_amortissement
+        if abs(nouvelle_vy) < seuil_arret:
+            nouvelle_vy = 0
+        personnage["vitesse"] = (vitesse_x * facteur_amortissement, nouvelle_vy)
+    else:
+        nouvelle_vx = -vitesse_x * facteur_amortissement
+        if abs(nouvelle_vx) < seuil_arret:
+            nouvelle_vx = 0
+        personnage["vitesse"] = (nouvelle_vx, vitesse_y * facteur_amortissement)
+
+
+def choc_colle(personnage, bloc):
+    """
+    MODIFICATION v3 (NOUVEAU) — surface colle ('purple').
+    Arrêt total immédiat dès le premier contact, sans glissement.
+    ANCIENNE VERSION : n'existait pas.
+    """
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    cote_touche = detecter_cote(personnage, bloc, (vitesse_x, vitesse_y))
+    placer_bord(personnage, bloc, cote_touche)
+    personnage["vitesse"] = (0, 0)
 
 
 def choc(personnage, lst_blocs):
     """
-    Orchestre la gestion d'une collision :
-    trouve le bloc touché avec collision(), puis appelle choc_mou().
-    Ne fait rien si le personnage n'est en collision avec aucun bloc.
+    Orchestre la gestion d'une collision : trouve le bloc touché, lit sa couleur,
+    et appelle la fonction de choc correspondante.
+
+    MODIFICATION v3 : dispatching selon la couleur du bloc.
+    ANCIENNE VERSION :
+        bloc_touche = collision(personnage, lst_blocs)
+        if bloc_touche is not None:
+            choc_mou(personnage, bloc_touche)
+
+    Correspondance couleurs → comportements :
+        'gray'   → choc mou (défaut)
+        'blue'   → glace (glissement)
+        'brown'  → boue (dérapage)
+        'pink'  → élastique (rebond parfait)
+        'orange' → amorti (rebond avec perte)
+        'purple' → colle (arrêt total)
 
     personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
-    lst_blocs  : liste de blocs ((x1, y1), (x2, y2))
+    lst_blocs  : liste de blocs ((x1, y1), (x2, y2), couleur)
     """
+    bloc_en_contact = collision(personnage, lst_blocs)
 
-    bloc_touche = collision(personnage, lst_blocs)
+    if bloc_en_contact is None:
+        return
 
-    if bloc_touche is not None : 
-        choc_mou(personnage, bloc_touche)
+    # MODIFICATION v3 : lecture de la couleur pour choisir le comportement
+    # ANCIENNE VERSION : choc_mou(personnage, bloc_en_contact)
+    _, _, couleur_bloc = bloc_en_contact
 
+    if couleur_bloc == 'blue':
+        choc_glace(personnage, bloc_en_contact)
+    elif couleur_bloc == 'brown':
+        choc_boue(personnage, bloc_en_contact)
+    elif couleur_bloc == 'pink':
+        choc_elastique(personnage, bloc_en_contact)
+    elif couleur_bloc == 'orange':
+        choc_amorti(personnage, bloc_en_contact)
+    elif couleur_bloc == 'purple':
+        choc_colle(personnage, bloc_en_contact)
+    else:
+        # 'gray' ou toute couleur inconnue → comportement par défaut
+        choc_mou(personnage, bloc_en_contact)
 
 
 def pas(personnage, lst_blocs, objectif, est_graphique):
-    ancienne_pos = personnage["position"]
-    
+    # MODIFICATION v2 : renommage 'ancienne_pos' → 'position_avant_deplacement'
+    # ANCIENNE VERSION : ancienne_pos = personnage["position"]
+
+    position_avant_deplacement = personnage["position"]
+
     deplacer(personnage, GRAVITE, PAS)
 
     if victoire(personnage, objectif):
@@ -143,33 +241,37 @@ def pas(personnage, lst_blocs, objectif, est_graphique):
 
     choc(personnage, lst_blocs)
 
-    vx, vy = personnage["vitesse"]
-    if (vx == 0 and vy == 0) or (personnage["position"] == ancienne_pos):
-        return True 
-    
+    vitesse_x, vitesse_y = personnage["vitesse"]
+    vitesse_nulle        = (vitesse_x == 0 and vitesse_y == 0)
+    position_inchangee   = (personnage["position"] == position_avant_deplacement)
+
+    if vitesse_nulle or position_inchangee:
+        return True
+
     return False
 
-def simuler(personnage, lst_blocs, objectif, est_graphique): 
-    trajectoire = [personnage["position"]]
-    compteur = 0
-    
-    while not pas(personnage, lst_blocs, objectif, est_graphique): 
-        trajectoire.append(personnage["position"])
-        compteur += 1
-        if compteur > 5000:
+
+def simuler(personnage, lst_blocs, objectif, est_graphique):
+    liste_positions   = [personnage["position"]]
+    nombre_iterations = 0
+
+    # MODIFICATION v4 : Seuil réduit à 1000 pour éviter les boucles infinies sur glace/ressort
+    while not pas(personnage, lst_blocs, objectif, est_graphique):
+        liste_positions.append(personnage["position"])
+        nombre_iterations += 1
+        if nombre_iterations > 1000: # Plus réactif que 5000
             personnage["vitesse"] = (0, 0)
             break
 
-    trajectoire.append(personnage["position"])
-    return trajectoire
-
+    liste_positions.append(personnage["position"])
+    return liste_positions
 
 
 def clic_vers_vitesse(personnage, clic):
     """
     La fonction met à jour la vitesse du personnage par le clic de l'utilisateur.
     personnage : dictionnaire (position, vitesse)
-    clic : tuple (x, y) des coordonnées du clics.
+    clic : tuple (x, y) des coordonnées du clic.
     >>> perso1 = {"position": (100, 100), "vitesse": (0, 0)}
     >>> clic1 = (130, 140)
     >>> clic_vers_vitesse(perso1, clic1)
@@ -181,77 +283,95 @@ def clic_vers_vitesse(personnage, clic):
     >>> perso2["vitesse"]
     (30.0, 40.0)
     """
+    # MODIFICATION v2 : renommage des variables internes
+    # ANCIENNE VERSION : perso_x, perso_y / clic_x, clic_y / vecteur_x / vecteur_y / norme / coef
 
-    perso_x, perso_y = personnage["position"]
-    clic_x, clic_y = clic
-    vecteur_x = float(clic_x - perso_x)
-    vecteur_y = float(clic_y - perso_y)
-    norme = math.sqrt(vecteur_x**2 + vecteur_y**2)
+    centre_x, centre_y           = personnage["position"]
+    destination_x, destination_y = clic
 
-    if norme == 0:
+    direction_x = float(destination_x - centre_x)
+    direction_y = float(destination_y - centre_y)
+
+    longueur_vecteur = math.sqrt(direction_x**2 + direction_y**2)
+
+    if longueur_vecteur == 0:
         personnage["vitesse"] = (0.0, 0.0)
         return
-    
-    if norme > VMAX : 
-        coef = VMAX / norme
-        vecteur_x = vecteur_x * coef
-        vecteur_y = vecteur_y * coef
-    
-    personnage["vitesse"] = (vecteur_x, vecteur_y)
+
+    if longueur_vecteur > VMAX:
+        reduction   = VMAX / longueur_vecteur
+        direction_x = direction_x * reduction
+        direction_y = direction_y * reduction
+
+    personnage["vitesse"] = (direction_x, direction_y)
 
 
-
-def collision(personnage, lst_blocs, est_graphique = False):
+def collision(personnage, lst_blocs, est_graphique=False):
     """
     La fonction renvoie le bloc ayant eu un contact avec le personnage et None sinon.
     personnage : dictionnaire (position, vitesse)
-    lst_blocs = liste de blocs ((x1,y1), (x2, y2))
-    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
+    lst_blocs = liste de blocs ((x1,y1), (x2, y2), couleur)
+    est_graphique : bool
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-    >>> lst_bloc = [((105, 150), (300, 170))]
-    >>> collision(perso1, lst_bloc, est_graphique)
-    ((105, 150), (300, 170))
+    >>> lst_bloc = [((105, 150), (300, 170), 'gray')]
+    >>> collision(perso1, lst_bloc, False)
+    ((105, 150), (300, 170), 'gray')
     """
-    largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
-    hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
-    perso_x1, perso_y1 = personnage["position"]
-    perso_x2 = perso_x1 + largeur
-    perso_y2 = perso_y1 + hauteur
+    # MODIFICATION v2 : renommage des variables internes
+    # ANCIENNE VERSION : largeur/hauteur, perso_x1/y1/x2/y2, bloc_x1 etc.
 
-    for bloc in lst_blocs : 
-        (bloc_x1, bloc_y1), (bloc_x2, bloc_y2), _ = bloc
-        if perso_x2 > bloc_x1 and perso_x1 < bloc_x2 and perso_y2 > bloc_y1 and perso_y1 < bloc_y2 :
-            return bloc
+    taille_largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
+    taille_hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
+
+    coin_gauche, coin_haut = personnage["position"]
+    coin_droit = coin_gauche + taille_largeur
+    coin_bas   = coin_haut  + taille_hauteur
+
+    for bloc_courant in lst_blocs:
+        (bloc_gauche, bloc_haut), (bloc_droit, bloc_bas), _ = bloc_courant
+
+        touche_horizontalement = coin_droit > bloc_gauche and coin_gauche < bloc_droit
+        touche_verticalement   = coin_bas   > bloc_haut  and coin_haut  < bloc_bas
+
+        if touche_horizontalement and touche_verticalement:
+            return bloc_courant
+
     return None
 
-def victoire(personnage, objectif, est_graphique = False):
+
+def victoire(personnage, objectif, est_graphique=False):
     """
     La fonction renvoie True si le personnage a atteint l'objectif et False sinon.
     personnage : dictionnaire (position, vitesse)
     objectif : tuple de deux coins ((x1,y1), (x2, y2))
-    est_graphique : bool qui indique le mode( 0 pour les formes géométrique, 1 pour les texture)
+    est_graphique : bool
 
     >>> objectif1 = ((250,100), (270, 170))
     >>> perso1 = {"position": (260, 140), "vitesse": (0, 0)}
-    >>> victoire(perso1, objectif1, est_graphique)
+    >>> victoire(perso1, objectif1, False)
     True
 
     >>> perso2 = {"position": (230, 90), "vitesse": (0, 0)}
     >>> victoire(perso2, objectif1)
     False
     """
-    largeur = LARGEUR_NINJA if est_graphique else LARGEUR_PERSO
-    hauteur = HAUTEUR_NINJA if est_graphique else HAUTEUR_PERSO
+    # MODIFICATION v2 : renommage des variables internes
+    # ANCIENNE VERSION : perso_x1/y1/x2/y2, objectif_x1 etc.
 
-    perso_x1, perso_y1 = personnage["position"]
-    perso_x2 = perso_x1 + LARGEUR_PERSO
-    perso_y2 = perso_y1 + HAUTEUR_PERSO
+    coin_perso_gauche, coin_perso_haut = personnage["position"]
+    coin_perso_droit = coin_perso_gauche + LARGEUR_PERSO
+    coin_perso_bas   = coin_perso_haut   + HAUTEUR_PERSO
 
-    (objectif_x1, objectif_y1), (objectif_x2, objectif_y2) = objectif
+    (zone_gauche, zone_haut), (zone_droit, zone_bas) = objectif
 
-    if perso_x2 > objectif_x1 and perso_x1 < objectif_x2 and perso_y2 > objectif_y1 and perso_y1 < objectif_y2 :
+    dans_zone_x = coin_perso_droit > zone_gauche and coin_perso_gauche < zone_droit
+    dans_zone_y = coin_perso_bas   > zone_haut   and coin_perso_haut  < zone_bas
+
+    if dans_zone_x and dans_zone_y:
         return True
+
     return False
+
 
 if __name__ == "__main__":
     from doctest import testmod
