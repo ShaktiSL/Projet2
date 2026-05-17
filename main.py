@@ -1,3 +1,4 @@
+#Shaktinath SOLEIL, David NGALULA KABONGO, Mohamed TAHAR; GROUPE TP11_10
 from interface import *
 from fltk import *
 from chargement import *
