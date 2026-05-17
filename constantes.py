@@ -10,9 +10,9 @@ LARGEUR_NINJA = 60
 HAUTEUR_NINJA = 60
 
 # Physique
-GRAVITE = (0, 1)   
-PAS     = 1.2     
-VMAX    = 30      
+GRAVITE = (0, 7)   
+PAS     = 0.05    
+VMAX    = 50    
 
 # Menu
 LISTE_NIVEAUX = ["niveau1.txt", "niveau2.txt", "niveau3.txt"]
