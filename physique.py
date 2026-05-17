@@ -132,7 +132,7 @@ def choc(personnage, lst_blocs):
 
 
 
-def pas(personnage, lst_blocs, objectif):
+def pas(personnage, lst_blocs, objectif, est_graphique):
     ancienne_pos = personnage["position"]
     
     deplacer(personnage, GRAVITE, PAS)
