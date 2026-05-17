@@ -38,6 +38,12 @@ def simuler_saut(personnage, blocs, objectif, est_graphique):
     jusqu'à ce qu'il soit au repos. Travaille sur une copie du personnage
     pour ne pas modifier l'original.
     Retourne le nouveau personnage après le saut.
+    
+    >>> blocs = [((0, 350), (500, 370), "gray")]
+    >>> perso = {"position": (100, 300), "vitesse": (5, 0)}
+    >>> resultat = simuler_saut(perso, blocs, ((400, 100), (440, 140)), False)
+    >>> resultat["vitesse"]
+    (0, 0)
     """
     perso_copie = {"position": personnage["position"], "vitesse": personnage["vitesse"]}
     en_mouvement = True
@@ -60,6 +66,10 @@ def simuler_saut(personnage, blocs, objectif, est_graphique):
 
 
 def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max, est_graphique):
+    """
+    Recherche récursivement un chemin vers l'objectif.
+    Retourne la liste des vitesses à jouer, ou None si impossible.
+    """
     if victoire(personnage, objectif):
         return []
 
@@ -71,7 +81,6 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
         return None
     deja_explore.add(position_grille)
 
-    print(f"DEBUG: type de liste_vitesses = {type(liste_vitesses)}")
     for vitesse in liste_vitesses:
         perso_essai = {"position": personnage["position"], "vitesse": vitesse}
 
@@ -84,14 +93,13 @@ def resoudre(personnage, blocs, objectif, liste_vitesses, deja_explore, prof_max
 
     return None
 
-
 def resoudre_niveau(personnage, blocs, objectif, est_graphique, pas_v=10, prof_max=5):
     """La fonction finale à appeler.
     
     personnage : dictionnaire {"position": (x, y), "vitesse": (vx, vy)}
     blocs      : liste de blocs du niveau
     objectif   : tuple ((x1, y1), (x2, y2))
-    pas_v      : pas entre chaque vitesse testée (plus petit = plus précis mais plus lent)
+    pas_v      : pas entre chaque vitesse testée
     prof_max   : nombre de sauts maximum autorisés
     """
     vitesses = generer_vitesses(pas_v)
@@ -104,7 +112,7 @@ if __name__ == "__main__":
     objectif = ((200, 100), (240, 140))
 
     print("Lancement du solveur...")
-    resultat = resoudre_niveau(perso, blocs, objectif, pas_v=10, prof_max=3)
+    resultat = resoudre_niveau(perso, blocs, objectif, est_graphique=False ,pas_v=10, prof_max=3)
 
     if resultat is None:
         print("Aucune solution trouvée.")

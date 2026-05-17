@@ -11,18 +11,43 @@ def creer_perso(x,y):
 
 
 def lire_perso(lignes):
+    """
+    Parse la 1re ligne et retourne le dict personnage.
+
+    >>> lire_perso(["178,358\\n", "263,173,295,208\\n"])
+    {'position': (178, 358), 'vitesse': (0, 0)}
+
+    >>> lire_perso(["50,100\\n", "263,173,295,208\\n"])
+    {'position': (50, 100), 'vitesse': (0, 0)}
+    """
+
     ligne = lignes[0].split('#')[0].strip()
     parts = ligne.split(',')
     return {"position": (int(parts[0]), int(parts[1])), "vitesse": (0, 0)}
 
 def lire_objectif(lignes):
+    """
+    Parse la 2e ligne et retourne le tuple objectif.
+
+    >>> lire_objectif(["178,358\\n", "263,173,295,208\\n"])
+    ((263, 173), (295, 208))
+
+    >>> lire_objectif(["178,358\\n", "0,0,100,100\\n"])
+    ((0, 0), (100, 100))
+    """
     ligne = lignes[1].split('#')[0].strip()
     coords = ligne.split(',')
     return ((int(coords[0]), int(coords[1])), (int(coords[2]), int(coords[3])))
 
 def lire_blocs(lignes):
     """
-    Lit toutes les lignes à partir de la 3ème pour créer la liste de blocs.
+    Lit toutes les lignes a partir de la 3eme pour creer la liste de blocs.
+
+    >>> lire_blocs(["178,358\\n", "263,173,295,208\\n", "0,0,22,399\\n"])
+    [((0, 0), (22, 399), 'gray')]
+
+    >>> lire_blocs(["178,358\\n", "263,173,295,208\\n", "0,0,22,399 # mur\\n"])
+    [((0, 0), (22, 399), 'gray')]
     """
     lst_blocs = []
     for ligne in lignes[2:]:

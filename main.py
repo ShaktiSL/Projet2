@@ -5,7 +5,7 @@ from solveur import *
 from constantes import *
 import os
 
-def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
+def boucle_jeu(personnage, lst_blocs, objectif, est_graphique,meilleurs_score,fichier):
     """
     Boucle principale d'une partie.
     Retourne "MENU" pour revenir au menu, "QUITTER" pour quitter.
@@ -14,6 +14,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
     dernier_clic = (0, 0)
     nb_sauts     = 0         
     historique   = [dict(personnage)]
+    points_solveur =[]
  
     while True:
         efface_tout()
@@ -24,11 +25,14 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
         dessiner_blocs(lst_blocs, est_graphique)
         dessiner_objectif(objectif, est_graphique)
         dessiner_personnage(personnage, est_graphique)
-        
+        for (x, y) in points_solveur:
+            cercle(x, y, 8, remplissage='red', tag='solveur')
+
         if viseur:
             dessiner_fleche(personnage, dernier_clic)
  
         texte(10, 10, f"Sauts : {nb_sauts}", ancrage='nw', taille=18, couleur='black')
+        texte(10, 35, f"Meilleur : {meilleurs_score.get(fichier, '-')}", ancrage='nw', taille=18, couleur='blue')
 
         x, y = personnage["position"]
         if x < -100 or x > LARGEUR_FENETRE + 100 or y > HAUTEUR_FENETRE + 100:
@@ -63,7 +67,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
                     if type_v in ['ClicGauche', 'ClicDroit', 'Touche']:
                         attente_clic = False
                     elif type_v == 'Quitte':
-                        return "QUITTER"
+                        return "QUITTER",0
                 attente(0.01)
             
            
@@ -72,7 +76,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
             while donne_ev() is not None:
                 pass
                 
-            return "MENU"
+            return "MENU",nb_sauts
  
         ev = donne_ev()
         if ev is None:
@@ -80,7 +84,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
         tev = type_ev(ev)
  
         if tev == 'Quitte':
-            return "QUITTER"
+            return "QUITTER",0
  
         elif tev == 'ClicGauche':
             dernier_clic = (abscisse(ev), ordonnee(ev))
@@ -121,7 +125,7 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
         elif tev == 'Touche':
             t = touche(ev)
             if t == 'Escape':
-                return "MENU"
+                return "MENU",nb_sauts
                 
             elif t == 'BackSpace' or t == 'space':
                 if len(historique) > 1: 
@@ -139,10 +143,16 @@ def boucle_jeu(personnage, lst_blocs, objectif, est_graphique):
             
             elif t == 's':
                 print("Appel du solveur...")
-                solution = resoudre_niveau(personnage, lst_blocs, objectif, est_graphique, pas_v=20, prof_max=5)
+                solution = resoudre_niveau(personnage, lst_blocs, objectif, est_graphique, pas_v=10, prof_max=8)
                 
                 if solution:
-                    print(f"Solution trouvée : {solution}")
+                    print(f"Solution trouvée en {len(solution)} sauts : {solution}")
+                    points_solveur.clear()
+                    perso_copie = {"position": personnage["position"], "vitesse": (0, 0)}
+                    for vitesse in solution:
+                        perso_copie["vitesse"] = vitesse
+                        perso_copie = simuler_saut(perso_copie, lst_blocs, objectif, est_graphique)
+                        points_solveur.append(perso_copie["position"])
                 else:
                     print("Pas de solution trouvée.")
 
@@ -151,6 +161,7 @@ if __name__ == "__main__":
  
     continuer = True
     fichier = menu_selection(LISTE_NIVEAUX)
+    meilleurs_score = {}
     
 
     while continuer:
@@ -161,8 +172,11 @@ if __name__ == "__main__":
         chemin = "niveau/" + fichier
         perso, blocs, obj, est_graphique = charger_niveau(chemin)
  
-        resultat = boucle_jeu(perso, blocs, obj, est_graphique)
- 
+        resultat, nb_sauts = boucle_jeu(perso, blocs, obj, est_graphique,meilleurs_score,fichier)
+
+        if fichier not in meilleurs_score or nb_sauts < meilleurs_score[fichier]:
+            meilleurs_score[fichier] = nb_sauts
+
         if resultat == "QUITTER":
             continuer = False
         elif resultat == "MENU":
